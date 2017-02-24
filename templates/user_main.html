@@ -1,0 +1,40 @@
+<html>
+ <head>
+   <title>User main page</title>
+   <link rel="stylesheet" type="text/css" href="/static/style.css">
+ </head>
+ <body>
+   <div id="container">
+     <div class="pagetitle">
+       <h1>Form submitted</h1>
+     </div>
+     <div id="main">
+       <p>Welcome, {{name}}</p>
+       <p>Here is your email and password:</p>
+       <p>
+          <strong>Email</strong>: {{email}} <br>
+          <strong>Password</strong>: {{password}}
+       </p>
+	   <a href="{{ url_for('new_channel') }}">Create new channel</a> 
+	   <table>
+	   
+  <tr>
+    <td>Channels you own</td>
+    <td>Subscribed channels</td>
+    <td>Requested surveys</td>
+	{% for col1_val, col2_val, col3_val in table_rows %}
+		<tr>
+			<td><a href={{ col1_val }}>Link to Channel</td>
+			<td>{{ col2_val }}</td>
+			<td>{{ col3_val }}</td>
+		</tr>
+	{% endfor %}
+  </tr>
+	
+</table>
+	   
+     </div>
+	 
+   </div>
+ <body>
+</html>

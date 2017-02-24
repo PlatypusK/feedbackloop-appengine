@@ -1,0 +1,26 @@
+<html>
+ <head>
+   <title>Channel Name</title>
+   <link rel="stylesheet" type="text/css" href="/static/style.css">
+ </head>
+ <body>
+    <div id="container">
+      <div class="pagetitle">
+        <h1>Create channel</h1>
+      </div>
+      <div id="login">
+		
+
+		<form method='POST' action="{{url_for('new_channel')}}">		
+			<dl>	
+				{{ form.hidden_tag() }}
+				{% from "formhelpers.html" import render_field %}
+				{{ render_field(form.channelname) }}
+				{{ render_field(form.description) }}
+			</dl>
+		<p><input type=submit value="Create Channel">
+		</form>
+      </div>
+    </div>
+ <body>
+</html>

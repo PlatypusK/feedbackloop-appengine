@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Login</title>
+   <link rel="stylesheet" type="style_login/css" href="/static/style_login.css">
+  </head>
+  <body>
+    <div id="container">
+      <div class="pagetitle">
+        <h1>Login</h1>
+      </div>
+      <div id="login">
+		
+
+		<form method='POST' action="{{url_for('login')}}">		
+			<dl>	
+				{{ form.hidden_tag() }}
+				{% from "formhelpers.html" import render_field %}
+				{{ render_field(form.email) }}
+				{{ render_field(form.password) }}
+			</dl>
+		<p><input type=submit value=Login>
+		</form>
+      </div>
+	  <div id="new_user">
+			<a href="{{ url_for('new_user') }}">Create new user</a> 
+			<a href="{{ url_for('forgot_password') }}">Forgot password</a> 
+        </form>
+      </div>
+    </div>
+  </body>
+</html>	

@@ -1,14 +1,10 @@
-<html>
- <head>
-   <title>Channel Name</title>
-   <link rel="stylesheet" type="text/css" href="/static/style.css">
- </head>
- <body>
-    <div id="container">
-      <div class="pagetitle">
-        <h1>Create channel</h1>
-      </div>
-      <div id="login">
+{% extends "layout_logged_in.html" %}
+
+{% block content %}
+
+	<h3>This is where you create a channel for publishing to students</h3>
+
+      <div id="create_channel">
 		
 
 		<form method='POST' action="{{url_for('new_channel')}}">		
@@ -20,7 +16,5 @@
 			</dl>
 		<p><input type=submit value="Create Channel">
 		</form>
-      </div>
-    </div>
- <body>
-</html>
+
+{% endblock %}

@@ -1,32 +1,23 @@
-<html>
-  <head>
-    <title>Login</title>
-   <link rel="stylesheet" type="style_login/css" href="/static/style_login.css">
-  </head>
-  <body>
-    <div id="container">
-      <div class="pagetitle">
-        <h1>Login</h1>
-      </div>
-      <div id="login">
-        <form method="post" action="{{ url_for('new_user') }}">
+{% extends "layout_logged_out.html" %}
+
+{% block content %}
+
+
+      <div id="create_user">
+		
+
+		<form method='POST' action="{{url_for('login')}}">	
+			<dl>	
 			{{ form.hidden_tag() }}
 			{% from "formhelpers.html" import render_field %}
 			{{ render_field(form.email) }}
 			{{ render_field(form.password) }}
 			{{ render_field(form.confirm) }}
-
-          <!-- <label for="email">Email address:</label> -->
-          <!-- <input type="email" name="email"><br /> -->
-		  <!-- <label for="email_check">Retype email address:</label> -->
-          <!-- <input type="email" name="email_check"><br /> -->
-          <!-- <label for="password">Password:</label> -->
-          <!-- <input type="password" name="password"><br /> -->
-		  <!-- <label for="password_check">Retype password:</label> -->
-          <!-- <input type="password" name="password_check"><br /> -->
-          <input type="submit">
-        </form>
+			</dl>
+		<p><input type=submit value="Create User">
+		</form>
       </div>
-    </div>
-  </body>
-</html>	
+
+
+
+{% endblock %}

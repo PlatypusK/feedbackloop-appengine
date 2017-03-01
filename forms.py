@@ -13,8 +13,11 @@ from wtforms import BooleanField, StringField, PasswordField, validators
 class LoginForm(FlaskForm):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('Password', [
-        validators.DataRequired()])	
+        validators.DataRequired()])
 
+class ForgotPasswordForm(FlaskForm):
+	email=StringField('Email Address', [validators.Length(min=6, max=35)])
+	# recaptcha = RecaptchaField()
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
@@ -27,4 +30,8 @@ class RegistrationForm(FlaskForm):
 class NewChannelForm(FlaskForm):
 	channelname=StringField('Channel name', [validators.Length(min=4, max=25)])
 	description=StringField('Description',[validators.Length(min=4, max=100)])
-	
+class OwnedChannelsForm(FlaskForm):
+	pass
+
+class LoopForm(FlaskForm):
+	pass

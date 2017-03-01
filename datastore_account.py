@@ -3,19 +3,37 @@ from google.appengine.ext import ndb
 class Account(ndb.Model):
 	username = ndb.StringProperty(indexed=False)
 	email = ndb.StringProperty(indexed=True)
-	password = ndb.StringProperty(indexed=False)
+	salt = ndb.StringProperty(indexed=False)
+	salted_password = ndb.StringProperty(indexed=False)
 	subscribed_to=ndb.StringProperty(repeated=True, indexed=False)
 	owns_channels=ndb.KeyProperty(repeated=True, indexed=False)
 	published_loops=ndb.KeyProperty(repeated=True, indexed=False)
 	received_loops=ndb.KeyProperty(repeated=True, indexed=False)
+    
 		
 
-def getUser(userEmail):
-	q=Account.query(Account.email==userEmail)
-	return q
 
-
-def storeNewUser(newEmail, newPassword):
-	account=Account(email=newEmail,password=newPassword, username=None) #create entity
+"""Returns True if new user was successfully created, False otherwise, expects a tuple with email, salt and a salted hashed password in that order"""
+def storeNewUser(verification_data):
+	account=Account(email=verification_data[0],salt=verification_data[1], salted_password=verification_data[2]) #create entity
 	key=account.put ()  #store entity
-	return key
+	if key:
+		return True
+	else:
+		return False
+
+def isOwnerOfChannel(channelId):
+	return True
+
+"""Returns a tuple containing the users id, salted and hashed password and the randomly generated salt if the user exists and is unique, otherwise returns false"""
+def get_user_verification_data(email):
+	query=Account.query(Account.email==email)
+	user=query.get()
+	if user==None:
+		return False
+	if query.count() == 1:
+		return (user.key.id(),user.salt, user.salted_password)
+	return False
+
+
+    

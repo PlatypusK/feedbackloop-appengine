@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0a3358dd-41b3-49be-88e8-157f8ddb71ce}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>appengine_config.py</StartupFile>
+    <SearchPath>lib\;static\;templates\;util\</SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <InterpreterVersion />
+    <Name>feedbackloop</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="appengine_config.py" />
+    <Compile Include="datastore_account.py" />
+    <Compile Include="datastore_channel.py" />
+    <Compile Include="datastore_loop.py" />
+    <Compile Include="forms.py" />
+    <Compile Include="lib\click\core.py" />
+    <Compile Include="lib\click\decorators.py" />
+    <Compile Include="lib\click\exceptions.py" />
+    <Compile Include="lib\click\formatting.py" />
+    <Compile Include="lib\click\globals.py" />
+    <Compile Include="lib\click\parser.py" />
+    <Compile Include="lib\click\termui.py" />
+    <Compile Include="lib\click\testing.py" />
+    <Compile Include="lib\click\types.py" />
+    <Compile Include="lib\click\utils.py" />
+    <Compile Include="lib\click\_bashcomplete.py" />
+    <Compile Include="lib\click\_compat.py" />
+    <Compile Include="lib\click\_termui_impl.py" />
+    <Compile Include="lib\click\_textwrap.py" />
+    <Compile Include="lib\click\_unicodefun.py" />
+    <Compile Include="lib\click\_winconsole.py" />
+    <Compile Include="lib\click\__init__.py" />
+    <Compile Include="lib\flask\app.py" />
+    <Compile Include="lib\flask\blueprints.py" />
+    <Compile Include="lib\flask\cli.py" />
+    <Compile Include="lib\flask\config.py" />
+    <Compile Include="lib\flask\ctx.py" />
+    <Compile Include="lib\flask\debughelpers.py" />
+    <Compile Include="lib\flask\exthook.py" />
+    <Compile Include="lib\flask\ext\__init__.py" />
+    <Compile Include="lib\flask\globals.py" />
+    <Compile Include="lib\flask\helpers.py" />
+    <Compile Include="lib\flask\json.py" />
+    <Compile Include="lib\flask\logging.py" />
+    <Compile Include="lib\flask\sessions.py" />
+    <Compile Include="lib\flask\signals.py" />
+    <Compile Include="lib\flask\templating.py" />
+    <Compile Include="lib\flask\testing.py" />
+    <Compile Include="lib\flask\views.py" />
+    <Compile Include="lib\flask\wrappers.py" />
+    <Compile Include="lib\flask\_compat.py" />
+    <Compile Include="lib\flask\__init__.py" />
+    <Compile Include="lib\flask\__main__.py" />
+    <Compile Include="lib\flask_httpauth.py" />
+    <Compile Include="lib\flask_wtf\csrf.py" />
+    <Compile Include="lib\flask_wtf\file.py" />
+    <Compile Include="lib\flask_wtf\form.py" />
+    <Compile Include="lib\flask_wtf\html5.py" />
+    <Compile Include="lib\flask_wtf\i18n.py" />
+    <Compile Include="lib\flask_wtf\recaptcha\fields.py" />
+    <Compile Include="lib\flask_wtf\recaptcha\validators.py" />
+    <Compile Include="lib\flask_wtf\recaptcha\widgets.py" />
+    <Compile Include="lib\flask_wtf\recaptcha\__init__.py" />
+    <Compile Include="lib\flask_wtf\_compat.py" />
+    <Compile Include="lib\flask_wtf\__init__.py" />
+    <Compile Include="lib\itsdangerous.py" />
+    <Compile Include="lib\jinja2\asyncfilters.py" />
+    <Compile Include="lib\jinja2\asyncsupport.py" />
+    <Compile Include="lib\jinja2\bccache.py" />
+    <Compile Include="lib\jinja2\compiler.py" />
+    <Compile Include="lib\jinja2\constants.py" />
+    <Compile Include="lib\jinja2\debug.py" />
+    <Compile Include="lib\jinja2\defaults.py" />
+    <Compile Include="lib\jinja2\environment.py" />
+    <Compile Include="lib\jinja2\exceptions.py" />
+    <Compile Include="lib\jinja2\ext.py" />
+    <Compile Include="lib\jinja2\filters.py" />
+    <Compile Include="lib\jinja2\idtracking.py" />
+    <Compile Include="lib\jinja2\lexer.py" />
+    <Compile Include="lib\jinja2\loaders.py" />
+    <Compile Include="lib\jinja2\meta.py" />
+    <Compile Include="lib\jinja2\nodes.py" />
+    <Compile Include="lib\jinja2\optimizer.py" />
+    <Compile Include="lib\jinja2\parser.py" />
+    <Compile Include="lib\jinja2\runtime.py" />
+    <Compile Include="lib\jinja2\sandbox.py" />
+    <Compile Include="lib\jinja2\tests.py" />
+    <Compile Include="lib\jinja2\utils.py" />
+    <Compile Include="lib\jinja2\visitor.py" />
+    <Compile Include="lib\jinja2\_compat.py" />
+    <Compile Include="lib\jinja2\_stringdefs.py" />
+    <Compile Include="lib\jinja2\__init__.py" />
+    <Compile Include="lib\markupsafe\tests.py" />
+    <Compile Include="lib\markupsafe\_compat.py" />
+    <Compile Include="lib\markupsafe\_constants.py" />
+    <Compile Include="lib\markupsafe\_native.py" />
+    <Compile Include="lib\markupsafe\__init__.py" />
+    <Compile Include="lib\werkzeug\contrib\atom.py" />
+    <Compile Include="lib\werkzeug\contrib\cache.py" />
+    <Compile Include="lib\werkzeug\contrib\fixers.py" />
+    <Compile Include="lib\werkzeug\contrib\iterio.py" />
+    <Compile Include="lib\werkzeug\contrib\jsrouting.py" />
+    <Compile Include="lib\werkzeug\contrib\limiter.py" />
+    <Compile Include="lib\werkzeug\contrib\lint.py" />
+    <Compile Include="lib\werkzeug\contrib\profiler.py" />
+    <Compile Include="lib\werkzeug\contrib\securecookie.py" />
+    <Compile Include="lib\werkzeug\contrib\sessions.py" />
+    <Compile Include="lib\werkzeug\contrib\testtools.py" />
+    <Compile Include="lib\werkzeug\contrib\wrappers.py" />
+    <Compile Include="lib\werkzeug\contrib\__init__.py" />
+    <Compile Include="lib\werkzeug\datastructures.py" />
+    <Compile Include="lib\werkzeug\debug\console.py" />
+    <Compile Include="lib\werkzeug\debug\repr.py" />
+    <Compile Include="lib\werkzeug\debug\tbtools.py" />
+    <Compile Include="lib\werkzeug\debug\__init__.py" />
+    <Compile Include="lib\werkzeug\exceptions.py" />
+    <Compile Include="lib\werkzeug\filesystem.py" />
+    <Compile Include="lib\werkzeug\formparser.py" />
+    <Compile Include="lib\werkzeug\http.py" />
+    <Compile Include="lib\werkzeug\local.py" />
+    <Compile Include="lib\werkzeug\posixemulation.py" />
+    <Compile Include="lib\werkzeug\routing.py" />
+    <Compile Include="lib\werkzeug\script.py" />
+    <Compile Include="lib\werkzeug\security.py" />
+    <Compile Include="lib\werkzeug\serving.py" />
+    <Compile Include="lib\werkzeug\test.py" />
+    <Compile Include="lib\werkzeug\testapp.py" />
+    <Compile Include="lib\werkzeug\urls.py" />
+    <Compile Include="lib\werkzeug\useragents.py" />
+    <Compile Include="lib\werkzeug\utils.py" />
+    <Compile Include="lib\werkzeug\wrappers.py" />
+    <Compile Include="lib\werkzeug\wsgi.py" />
+    <Compile Include="lib\werkzeug\_compat.py" />
+    <Compile Include="lib\werkzeug\_internal.py" />
+    <Compile Include="lib\werkzeug\_reloader.py" />
+    <Compile Include="lib\werkzeug\__init__.py" />
+    <Compile Include="lib\wtforms\compat.py" />
+    <Compile Include="lib\wtforms\csrf\core.py" />
+    <Compile Include="lib\wtforms\csrf\session.py" />
+    <Compile Include="lib\wtforms\csrf\__init__.py" />
+    <Compile Include="lib\wtforms\ext\appengine\db.py" />
+    <Compile Include="lib\wtforms\ext\appengine\fields.py" />
+    <Compile Include="lib\wtforms\ext\appengine\ndb.py" />
+    <Compile Include="lib\wtforms\ext\appengine\__init__.py" />
+    <Compile Include="lib\wtforms\ext\csrf\fields.py" />
+    <Compile Include="lib\wtforms\ext\csrf\form.py" />
+    <Compile Include="lib\wtforms\ext\csrf\session.py" />
+    <Compile Include="lib\wtforms\ext\csrf\__init__.py" />
+    <Compile Include="lib\wtforms\ext\dateutil\fields.py" />
+    <Compile Include="lib\wtforms\ext\dateutil\__init__.py" />
+    <Compile Include="lib\wtforms\ext\django\fields.py" />
+    <Compile Include="lib\wtforms\ext\django\i18n.py" />
+    <Compile Include="lib\wtforms\ext\django\orm.py" />
+    <Compile Include="lib\wtforms\ext\django\templatetags\wtforms.py" />
+    <Compile Include="lib\wtforms\ext\django\templatetags\__init__.py" />
+    <Compile Include="lib\wtforms\ext\django\__init__.py" />
+    <Compile Include="lib\wtforms\ext\i18n\form.py" />
+    <Compile Include="lib\wtforms\ext\i18n\utils.py" />
+    <Compile Include="lib\wtforms\ext\i18n\__init__.py" />
+    <Compile Include="lib\wtforms\ext\sqlalchemy\fields.py" />
+    <Compile Include="lib\wtforms\ext\sqlalchemy\orm.py" />
+    <Compile Include="lib\wtforms\ext\sqlalchemy\__init__.py" />
+    <Compile Include="lib\wtforms\ext\__init__.py" />
+    <Compile Include="lib\wtforms\fields\core.py" />
+    <Compile Include="lib\wtforms\fields\html5.py" />
+    <Compile Include="lib\wtforms\fields\simple.py" />
+    <Compile Include="lib\wtforms\fields\__init__.py" />
+    <Compile Include="lib\wtforms\form.py" />
+    <Compile Include="lib\wtforms\i18n.py" />
+    <Compile Include="lib\wtforms\meta.py" />
+    <Compile Include="lib\wtforms\utils.py" />
+    <Compile Include="lib\wtforms\validators.py" />
+    <Compile Include="lib\wtforms\widgets\core.py" />
+    <Compile Include="lib\wtforms\widgets\html5.py" />
+    <Compile Include="lib\wtforms\widgets\__init__.py" />
+    <Compile Include="lib\wtforms\__init__.py" />
+    <Compile Include="main.py" />
+    <Compile Include="views.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="util.py" />
+    <Compile Include="util\security.py" />
+    <Compile Include="util\__init__.py" />
+    <Compile Include="verification.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\click-5.1.dist-info\top_level.txt" />
+    <Content Include="lib\click-6.7.dist-info\top_level.txt" />
+    <Content Include="lib\Flask-0.12.dist-info\entry_points.txt" />
+    <Content Include="lib\Flask-0.12.dist-info\LICENSE.txt" />
+    <Content Include="lib\Flask-0.12.dist-info\top_level.txt" />
+    <Content Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info\dependency_links.txt" />
+    <Content Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info\installed-files.txt" />
+    <Content Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info\requires.txt" />
+    <Content Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info\SOURCES.txt" />
+    <Content Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info\top_level.txt" />
+    <Content Include="lib\Flask_WTF-0.14.2.dist-info\LICENSE.txt" />
+    <Content Include="lib\Flask_WTF-0.14.2.dist-info\top_level.txt" />
+    <Content Include="lib\itsdangerous-0.24-py2.7.egg-info\dependency_links.txt" />
+    <Content Include="lib\itsdangerous-0.24-py2.7.egg-info\installed-files.txt" />
+    <Content Include="lib\itsdangerous-0.24-py2.7.egg-info\SOURCES.txt" />
+    <Content Include="lib\itsdangerous-0.24-py2.7.egg-info\top_level.txt" />
+    <Content Include="lib\Jinja2-2.9.5.dist-info\entry_points.txt" />
+    <Content Include="lib\Jinja2-2.9.5.dist-info\LICENSE.txt" />
+    <Content Include="lib\Jinja2-2.9.5.dist-info\top_level.txt" />
+    <Content Include="lib\MarkupSafe-0.23-py2.7.egg-info\dependency_links.txt" />
+    <Content Include="lib\MarkupSafe-0.23-py2.7.egg-info\installed-files.txt" />
+    <Content Include="lib\MarkupSafe-0.23-py2.7.egg-info\SOURCES.txt" />
+    <Content Include="lib\MarkupSafe-0.23-py2.7.egg-info\top_level.txt" />
+    <Content Include="lib\Werkzeug-0.11.15.dist-info\top_level.txt" />
+    <Content Include="lib\werkzeug\debug\shared\console.png" />
+    <Content Include="lib\werkzeug\debug\shared\debugger.js" />
+    <Content Include="lib\werkzeug\debug\shared\jquery.js" />
+    <Content Include="lib\werkzeug\debug\shared\less.png" />
+    <Content Include="lib\werkzeug\debug\shared\more.png" />
+    <Content Include="lib\werkzeug\debug\shared\source.png" />
+    <Content Include="lib\werkzeug\debug\shared\style.css" />
+    <Content Include="lib\WTForms-2.1-py2.7.egg-info\dependency_links.txt" />
+    <Content Include="lib\WTForms-2.1-py2.7.egg-info\installed-files.txt" />
+    <Content Include="lib\WTForms-2.1-py2.7.egg-info\requires.txt" />
+    <Content Include="lib\WTForms-2.1-py2.7.egg-info\SOURCES.txt" />
+    <Content Include="lib\WTForms-2.1-py2.7.egg-info\top_level.txt" />
+    <Content Include="static\bootstrap.css" />
+    <Content Include="static\bootstrap.min.css" />
+    <Content Include="static\site.css" />
+    <Content Include="static\style.css" />
+    <Content Include="static\style_login.css" />
+    <Content Include="templates\create_channel.html" />
+    <Content Include="templates\create_loop.html" />
+    <Content Include="templates\forgot_password.html" />
+    <Content Include="templates\formhelpers.html" />
+    <Content Include="templates\layout_logged_out.html" />
+    <Content Include="templates\layout_logged_in.html" />
+    <Content Include="templates\login_page.html" />
+    <Content Include="templates\new_user.html" />
+    <Content Include="templates\owned_channel.html" />
+    <Content Include="templates\user_main.html" />
+    <Content Include="templates\user_main_old.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib" />
+    <Folder Include="lib\click" />
+    <Folder Include="lib\click-5.1.dist-info" />
+    <Folder Include="lib\click-6.7.dist-info" />
+    <Folder Include="lib\flask" />
+    <Folder Include="lib\Flask-0.12.dist-info" />
+    <Folder Include="lib\flask\ext" />
+    <Folder Include="lib\Flask_HTTPAuth-3.2.2-py2.7.egg-info" />
+    <Folder Include="lib\flask_wtf" />
+    <Folder Include="lib\Flask_WTF-0.14.2.dist-info" />
+    <Folder Include="lib\flask_wtf\recaptcha" />
+    <Folder Include="lib\itsdangerous-0.24-py2.7.egg-info" />
+    <Folder Include="lib\jinja2" />
+    <Folder Include="lib\Jinja2-2.9.5.dist-info" />
+    <Folder Include="lib\markupsafe" />
+    <Folder Include="lib\MarkupSafe-0.23-py2.7.egg-info" />
+    <Folder Include="lib\werkzeug" />
+    <Folder Include="lib\Werkzeug-0.11.15.dist-info" />
+    <Folder Include="lib\werkzeug\contrib" />
+    <Folder Include="lib\werkzeug\debug" />
+    <Folder Include="lib\werkzeug\debug\shared" />
+    <Folder Include="lib\wtforms" />
+    <Folder Include="lib\WTForms-2.1-py2.7.egg-info" />
+    <Folder Include="lib\wtforms\csrf" />
+    <Folder Include="lib\wtforms\ext" />
+    <Folder Include="lib\wtforms\ext\appengine" />
+    <Folder Include="lib\wtforms\ext\csrf" />
+    <Folder Include="lib\wtforms\ext\dateutil" />
+    <Folder Include="lib\wtforms\ext\django" />
+    <Folder Include="lib\wtforms\ext\django\templatetags" />
+    <Folder Include="lib\wtforms\ext\i18n" />
+    <Folder Include="lib\wtforms\ext\sqlalchemy" />
+    <Folder Include="lib\wtforms\fields" />
+    <Folder Include="lib\wtforms\widgets" />
+    <Folder Include="static" />
+    <Folder Include="templates" />
+    <Folder Include="util" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>

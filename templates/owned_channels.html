@@ -1,0 +1,73 @@
+{% extends "layout_logged_in.html" %}
+
+{% block content %}
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+	
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3">Your Channels</h1>
+        <p>Click "View details" to take a closer look at a channel and publish content from it</p>
+        <p><a class="btn btn-primary btn-lg" href="{{ url_for('new_channel') }}" role="button">Create new channel &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+
+			<form method='POST' action="{{url_for('view_owned_channels')}}">
+				{{ form.hidden_tag() }}
+				<div class="row">
+				{% for item in channel_list %}
+					<div class="col-md-4">
+					<h2>{{item.1}}</h2>
+					<p>{{item.2}}</p>
+					<!-- For some reason it is necessary to specify that the button should post even though it is in the form method post block. <input> works as expected. -->
+					<!-- It was necessary to use a <button> instead of an <input> so as to get different text for the value field and what is showing on the button. -->
+					<p><button type="submit" formmethod="post" class="btn btn-secondary" value={{item.0}} name="channel_id" >"View details &raquo;"</button></p>
+					</div>
+				{% endfor %}
+				</div>
+			</form>
+
+
+
+      <!-- <!-- Example row of columns --> -->
+
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Channel name</h2> -->
+          <!-- <p>Channel description</p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Heading</h2> -->
+          <!-- <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+       <!-- </div> -->
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Heading</h2> -->
+          <!-- <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+        <!-- </div> -->
+      <!-- </div> -->
+	      <!-- <div class="row"> -->
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Heading</h2> -->
+          <!-- <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+        <!-- </div> -->
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Heading</h2> -->
+          <!-- <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+       <!-- </div> -->
+        <!-- <div class="col-md-4"> -->
+          <!-- <h2>Heading</h2> -->
+          <!-- <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p> -->
+          <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+        <!-- </div> -->
+      </div>
+	  
+{% endblock %}

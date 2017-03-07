@@ -26,7 +26,7 @@ def isOwnerOfChannel(channelId):
 	return True
 
 """Returns a tuple containing the users id, salted and hashed password and the randomly generated salt if the user exists and is unique, otherwise returns false"""
-def get_user_verification_data(email):
+def get_user_verification_data_by_email(email):
 	query=Account.query(Account.email==email)
 	user=query.get()
 	if user==None:
@@ -34,6 +34,10 @@ def get_user_verification_data(email):
 	if query.count() == 1:
 		return (user.key.id(),user.salt, user.salted_password)
 	return False
-
+def get_user_verification_data_by_id(user_id):
+	user=Account.get_by_id(long(user_id))
+	if user==None:
+		return False
+	return (user.key.id(),user.salt, user.salted_password)
 
     

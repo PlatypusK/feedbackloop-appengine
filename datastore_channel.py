@@ -10,13 +10,14 @@ class Channel(ndb.Model):
 	active_loops=ndb.KeyProperty(indexed=False, repeated=True) #Keeps track of currently active loops
 	old_loops=ndb.KeyProperty(indexed=False, repeated=True)
 	
+	
 def getChannel(id):
 	c=Channel.get_by_id(id)
 	if isOwnerOfChannel(c):
 		return c
 	return None
 def get_owned_channel_identifiers(user_id):
-	"""Returns a list of tuples in the form (channelid,name,description)"""
+	"""Returns a list of tuples in the form (channelid,name,description) for all channels owned by the user_id user"""
 	query=Channel.query(Channel.owner==long(user_id))
 	if query.count()>0:
 		c_list=query.fetch(1000)#fetch at most 1000 channels
@@ -28,4 +29,19 @@ def verify_channel_owner(ownerid,channelid):
 	"""Checks that the ownerid given is the actual owner of the channel. 
 	Use this to test that the logged in user is the actual owner of the channel"""
 	return Channel.get_by_id(long(channelid)).owner==long(ownerid)
+def get_owned_channel_data(ownerid,channelid):
+	if not verify_channel_owner(ownerid,channelid):
+		return None
+	channel=Channel.get_by_id(long(channelid))
+	return channel
+def searchChannel(channelName):
+	query=Channel.query(Channel.name==channelName)
+	channels=query.fetch(1000)
+	channelInfo=[]
+	for x in channels:
+		channelInfo.append((x.key.id(),x.name,x.description))
+	return channelInfo
+		
+
+
 	

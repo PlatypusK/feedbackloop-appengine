@@ -5,7 +5,7 @@
 # from wtforms.validators import Required
 # from wtforms.fields.html5 import EmailField
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, PasswordField, validators
+from wtforms import BooleanField, StringField, PasswordField, validators, HiddenField
 
 # class EmailPasswordForm(FlaskForm):
     # password = PasswordField('password', validators=[Required()])
@@ -31,7 +31,21 @@ class NewChannelForm(FlaskForm):
 	channelname=StringField('Channel name', [validators.Length(min=4, max=25)])
 	description=StringField('Description',[validators.Length(min=4, max=100)])
 class OwnedChannelsForm(FlaskForm):
+	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
 	pass
+class OwnedChannelForm(FlaskForm):
+	channel_id_for_new_loop=HiddenField("No_loop_id");
+	channel_name=""
+	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
 
-class LoopForm(FlaskForm):
+class NewLoopForm(FlaskForm):
+	ACTION_PUBLISH="1"
+	channel_id=HiddenField();
+	action=HiddenField();
+	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
+class UserMainForm(FlaskForm):
 	pass
+class SubscribedChannelsForm(FlaskForm):
+	ACTION_SEARCH="1"
+	action=HiddenField()
+	searchWord=HiddenField()

@@ -1,20 +1,23 @@
-<html>
- <head>
-   <title>Channel Admin Page</title>
-   <link rel="stylesheet" type="text/css" href="/static/style.css">
- </head>
- <body>
-   <div id="container">
-     <div class="pagetitle">
-       <h1 >Channel: {{channel_name}}</h1>
-     </div>
-     <div id="channel info">
-		<a href="{{ url_for('create_loop') }}">Create new loop</a>
-		
-			
-	   
-     </div>
-	 
-   </div>
- <body>
-</html>
+{% extends "layout_logged_in.html" %}
+
+{% block content %}
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+
+	
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+
+	  <form method='POST' action="{{url_for('owned_channel')}}"  >
+	  	  {{ form.hidden_tag() }}
+        <h1 class="display-3">{{form.channel_name}}</h1>
+        <p>Click "View details" to look at data from recent loops</p>
+        <p><input class="btn btn-primary btn-lg" formmethod='POST'  value="Create new loop &raquo;" name="create_loop" href="{{ url_for('owned_channel') }}" type="submit"></input></p>
+      </form>
+	  </div>
+    </div>
+
+{% endblock %}

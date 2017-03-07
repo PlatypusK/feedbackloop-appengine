@@ -1,3 +1,7 @@
+var questionDivs=[];
+
+
+
 function changeclass (id, newCssClassName) {
 		document.getElementById(id).className = newCssClassName;
 }
@@ -14,8 +18,5 @@ function setNavItemActive(){
 	else if(document.URL.indexOf("about") >= 0){
 		changeclass("about", "nav-item active")
 	}
-}
-function addValueToForm(name, value){
-	
 }
 setNavItemActive()

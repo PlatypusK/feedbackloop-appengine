@@ -2,7 +2,6 @@ import logging
 
 from flask import Flask, request, redirect, url_for,current_app, session
 from flask_httpauth import HTTPBasicAuth
-from datastore_account import Account, get_user_verification_data
 import json
 import os
 from flask_wtf import Form
@@ -25,11 +24,6 @@ application_title='Feedback Loop'
 import views
 import verification
 
-
-
-
-
-	
 @app.before_request
 def log_request_info():
 	logging.info('Headers: %s', request.headers)

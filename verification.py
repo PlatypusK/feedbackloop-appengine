@@ -7,7 +7,7 @@ from flask_httpauth import HTTPBasicAuth
 import random, string
 from binascii import hexlify
 from flask import session
-from datastore_account import get_user_verification_data
+from datastore_account import get_user_verification_data_by_id
 
 auth=HTTPBasicAuth()
 
@@ -40,9 +40,11 @@ def get_new_verification_data(email, password):
 def verify_password(email, password):
 	logging.info(session.get('email'))
 	logging.info(session.get('password'))
+	logging.info(session.get('userId'))
 	if('email' in session):
-		user_salt_saltedpassword=get_user_verification_data(session.get('email'))
+		user_salt_saltedpassword=get_user_verification_data_by_id(session.get('userId'))
 		#if user exists
+		logging.info(user_salt_saltedpassword)
 		if(user_salt_saltedpassword):
 			if isPasswordCorrect(session.get('password'),user_salt_saltedpassword):
 				return True

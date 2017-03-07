@@ -1,3 +1,53 @@
 a:hover {
  cursor:pointer;
 }
+.questionbox{
+	resize: none;
+	display: block;
+	float: left;
+	width: 300px;
+}
+
+.addquestionbutton{
+
+	display: block;
+	float: left;
+	height: 40px;
+	margin: -1px -2px -2px;
+	width: 150px;
+}
+.addanswerbutton{
+	float: left;
+	display: block;
+	float: left;
+	height: 37px;
+	width: 300px;
+}
+.answerbox{
+	resize: none;
+	display: block;
+	float: left;
+	width: 300px;
+}
+.surveyinput{
+	padding-bottom: 25px;
+}
+.searchfield{
+	vertical-align: middle;
+	resize: none;
+	display: block;
+	float: left;
+	width: 200px;
+	height: 40px
+	padding-right: 20px;
+}
+.searchbutton{
+	vertical-align: middle;
+	height: 40px
+	display: block;
+	float: right;
+}
+.searchchannel{
+	width:500px;
+	vertical-align: middle;
+}

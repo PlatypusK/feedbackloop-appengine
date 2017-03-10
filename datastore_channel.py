@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from datastore_account import isOwnerOfChannel
+import datastore_account
 
 
 class Channel(ndb.Model):
@@ -10,10 +10,12 @@ class Channel(ndb.Model):
 	active_loops=ndb.KeyProperty(indexed=False, repeated=True) #Keeps track of currently active loops
 	old_loops=ndb.KeyProperty(indexed=False, repeated=True)
 	
-	
+def writeChannel(userId, name, description):
+	c=Channel(owner=long(userId),name=name,description=description)
+	id=c.put().id()
 def getChannel(id):
 	c=Channel.get_by_id(id)
-	if isOwnerOfChannel(c):
+	if datastore_account.isOwnerOfChannel(c):
 		return c
 	return None
 def get_owned_channel_identifiers(user_id):
@@ -41,6 +43,15 @@ def searchChannel(channelName):
 	for x in channels:
 		channelInfo.append((x.key.id(),x.name,x.description))
 	return channelInfo
+def subscribeChannel(userId,channelId):
+	channel=Channel.get_by_id(long(channelId))
+	if not long(userId) in channel.subscribers:#add only once
+		channel.subscribers.append(long(userId))
+		datastore_account.addChannelToSubscribed(userId,channelId)
+		channel.put()
+	
+	
+	
 		
 
 

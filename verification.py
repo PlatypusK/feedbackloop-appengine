@@ -41,7 +41,7 @@ def verify_password(email, password):
 	logging.info(session.get('email'))
 	logging.info(session.get('password'))
 	logging.info(session.get('userId'))
-	if('email' in session):
+	if('userId' in session):
 		user_salt_saltedpassword=get_user_verification_data_by_id(session.get('userId'))
 		#if user exists
 		logging.info(user_salt_saltedpassword)

@@ -2,7 +2,7 @@ var ANS_STRING_ID="addAnswer_";
 var QST_STRING_ID="question_";
 var SUR_STRING_ID="surveyItem_";
 var ANS_AREA_STRING_ID="answersArea_";
-var ACTION_PUBLISH="1";
+var ACTION_PUBLISH="publish";
 
 function extractNumericAnsId(ans_id){
 	return ans_id.substring(10);

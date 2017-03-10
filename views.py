@@ -7,14 +7,14 @@ from verification import  isPasswordCorrect,  get_new_verification_data
 import json
 import os
 from flask_wtf import Form
-from forms import LoginForm, NewChannelForm, RegistrationForm, ForgotPasswordForm, \
-	OwnedChannelsForm, OwnedChannelForm, NewLoopForm, UserMainForm, SubscribedChannelsForm
+from forms import *
 from flask_wtf.csrf import CSRFProtect
 from datastore_channel import Channel, getChannel
 from main import app, csrf, application_title
 from verification import auth
 from datastore_channel import get_owned_channel_identifiers, verify_channel_owner, get_owned_channel_data, searchChannel
 from datastore_loop import publish_loop
+from actions import *
 
 
 
@@ -82,14 +82,28 @@ def about():
 	message="Information about this Application: "
 	return render_template('about.html', title=application_title, message=message)	
 
+@app.route('/channel_search_results', methods=['GET','POST'])
+def channel_search_results():
+	if request.form.has_key('action'):
+		if request.form['action'] == ACTION_SEARCH:
+			return actionSearchChannel()
+		if request.form['action'] == ACTION_SUBSCRIBE:
+			return actionSubscribe()
+	else:
+		abort(400)
+	# logging.info(request.args)
+	
+	# logging.info(searchResult)
+	# form=ChannelSearchResults()
+	# return render_template('channel_search_results.html',form=form, channel_list=searchResult)
+	
 @app.route('/subscribed_channels', methods=['GET','POST'])
 def subscribed_channels():
 	form=SubscribedChannelsForm()
 	if request.form.has_key('action'):
-		if request.form['action']==SubscribedChannelsForm.ACTION_SEARCH:
-			searchResult=searchChannel(request.form['searchWord'])
-			logging.info('search')
-			logging.info(searchResult)
+		if request.form['action']==ACTION_SEARCH:
+
+			return redirect(url_for('channel_search_results'), code=307)
 			
 	return render_template('subscribed_channels.html', form=form)	
 	
@@ -97,10 +111,9 @@ def subscribed_channels():
 @auth.login_required
 def create_loop():
 	form=NewLoopForm()
-
 	logging.info('*+*+*+*+*+*')
 	if request.form.has_key('action'):
-		if request.form['action']==NewLoopForm.ACTION_PUBLISH:
+		if request.form['action']==ACTION_PUBLISH:
 			logging.debug("publish")
 			if publish_loop(session.get('userId'), request.form['channel_id'], request.form['jsonString']):
 				form=UserMainForm()
@@ -149,8 +162,7 @@ def new_channel():
 		logging.info('validated------new_channel-------'+
 			request.form['channelname']+'-------'+request.form['description'])
 		logging.info(session.get('userId'))
-		c=Channel(owner=int(session.get('userId')),name=request.form['channelname'],description=request.form['description'])
-		id=c.put().id()
+		writeChannel(int(session.get('userId')),request.form['channelname'],request.form['description'])
 		return redirect(url_for('owned_channel', channelid=id))
 	logging.info(form.errors.items())
 	return render_template('create_channel.html', form=form)

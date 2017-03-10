@@ -10,6 +10,9 @@ from wtforms import BooleanField, StringField, PasswordField, validators, Hidden
 # class EmailPasswordForm(FlaskForm):
     # password = PasswordField('password', validators=[Required()])
 
+	
+
+	
 class LoginForm(FlaskForm):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('Password', [
@@ -39,13 +42,16 @@ class OwnedChannelForm(FlaskForm):
 	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
 
 class NewLoopForm(FlaskForm):
-	ACTION_PUBLISH="1"
 	channel_id=HiddenField();
 	action=HiddenField();
 	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
 class UserMainForm(FlaskForm):
 	pass
 class SubscribedChannelsForm(FlaskForm):
-	ACTION_SEARCH="1"
 	action=HiddenField()
-	searchWord=HiddenField()
+	payLoad=HiddenField()
+class ChannelSearchResults(FlaskForm):
+	action=HiddenField()
+	payLoad=HiddenField()
+
+	"""using this form to pass information into the template. Needed for CSRF protection among other things"""

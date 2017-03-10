@@ -5,7 +5,7 @@ class Account(ndb.Model):
 	email = ndb.StringProperty(indexed=True)
 	salt = ndb.StringProperty(indexed=False)
 	salted_password = ndb.StringProperty(indexed=False)
-	subscribed_to=ndb.StringProperty(repeated=True, indexed=False)
+	subscribed_to=ndb.IntegerProperty(repeated=True, indexed=False)
 	owns_channels=ndb.KeyProperty(repeated=True, indexed=False)
 	published_loops=ndb.KeyProperty(repeated=True, indexed=False)
 	received_loops=ndb.KeyProperty(repeated=True, indexed=False)
@@ -39,5 +39,15 @@ def get_user_verification_data_by_id(user_id):
 	if user==None:
 		return False
 	return (user.key.id(),user.salt, user.salted_password)
+	
+def addChannelToSubscribed(userId,channelId):
+	user=Account.get_by_id(long(userId))
+	if user==None:
+		return False
+	if not long(channelId) in user.subscribed_to:
+		user.subscribed_to.append(long(channelId))
+		user.put()
+		return True
+	return False
 
     

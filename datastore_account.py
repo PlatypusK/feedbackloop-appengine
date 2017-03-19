@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+import logging
 
 class Account(ndb.Model):
 	username = ndb.StringProperty(indexed=False)
@@ -9,6 +10,7 @@ class Account(ndb.Model):
 	owns_channels=ndb.KeyProperty(repeated=True, indexed=False)
 	published_loops=ndb.KeyProperty(repeated=True, indexed=False)
 	received_loops=ndb.KeyProperty(repeated=True, indexed=False)
+	answeredLoops=ndb.IntegerProperty(repeated=True, indexed=False)
     
 		
 
@@ -49,5 +51,15 @@ def addChannelToSubscribed(userId,channelId):
 		user.put()
 		return True
 	return False
-
+def getSubscribedChannels(userId):
+	user=Account.get_by_id(long(userId))
+	return user.subscribed_to
+def removeAnsweredLoops(userId, loops):
+	activeLoopIdPosition=3;
+	acc=Account.get_by_id(long(userId));
+	return [loop for loop in loops if loop[activeLoopIdPosition] not in acc.answeredLoops]
+def setAnsweredLoop(userId, loopId):
+	acc=Account.get_by_id(long(userId));
+	acc.answeredLoops.append(long(loopId));
+	acc.put()
     

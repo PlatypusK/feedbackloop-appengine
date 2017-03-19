@@ -19,25 +19,21 @@
       </div>
     </div>
 	<script src="static/js/subscribed_channels.js"></script>
+	    <div class="container">
+		<div class="row">
+			{% for item in channel_list %}
+				<div class="col-md-4">
+				<h2>{{item.1}}</h2>
+				<p>{{item.2}}</p>
+				<p><button type="button" class="btn btn-secondary" value={{item.0}}  name="channelid" onclick="channelDetails(this)" >Activity &raquo;"</button></p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	<script src="static/js/channel_search_results.js"></script>
 	<form method='POST' id="flaskForm">
 		{{ form.hidden_tag() }}
-		
 	</form>
-
-    <!-- <div class="container"> -->
-
-			<!-- <form method='POST' action="{{url_for('view_owned_channels')}}"> -->
-				<!-- {{ form.hidden_tag() }} -->
-				<!-- <div class="row"> -->
-				<!-- {% for item in channel_list %} -->
-					<!-- <div class="col-md-4"> -->
-					<!-- <h2>{{item.1}}</h2> -->
-					<!-- <p>{{item.2}}</p> -->
-					<!-- <p><button type="submit" formmethod="post" class="btn btn-secondary" value={{item.0}} name="channelid" >"View details &raquo;"</button></p> -->
-					<!-- </div> -->
-				<!-- {% endfor %} -->
-				<!-- </div> -->
-			<!-- </form> -->
-      <!-- </div> -->
 	  
 {% endblock %}
+{% block scripts %}<script src="static/js/channel_search_results.js"></script>{% endblock %}

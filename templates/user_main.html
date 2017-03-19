@@ -10,8 +10,24 @@
     <div class="jumbotron">
       <div class="container">
         <h1 class="display-3">Welcome</h1>
-        <p>See below for loops that need your reply</p>
+        <p>See below for active loops</p>
         <p><a class="btn btn-primary btn-lg" href="{{ url_for('new_channel') }}" name="create_channel"  role="button">Create new Channel &raquo;</a></p>
       </div>
     </div>
+	<div class="container">
+		<div class="row">
+			{% for item in loop_list %}
+				<div class="col-md-4">
+				<h2>{{item.1}}</h2>
+				<p id={{loop.index0~"_messageParagraph"}}></p>
+				<p><button type="button" class="btn btn-secondary" value={{item.3}}  name="loopId" onclick="selectSurvey(this)" >Respond &raquo;</button></p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	<form method='POST' id="flaskForm" action="{{url_for('user_main')}}">			
+		{{ form.hidden_tag() }}
+	</form>
+	<script src="static/js/user_main.js"></script>
+
 {% endblock %}

@@ -49,8 +49,14 @@ def subscribeChannel(userId,channelId):
 		channel.subscribers.append(long(userId))
 		datastore_account.addChannelToSubscribed(userId,channelId)
 		channel.put()
-	
-	
+def getSubscribedChannelIdentifiers(user_id):
+	"""Returns a list of tuples in the form (channelid,name,description) for all channels subsribed by the user_id user"""
+	subChannels=datastore_account.getSubscribedChannels(user_id)
+	identifiers=[]
+	for channelId in subChannels:
+		c=Channel.get_by_id(channelId)
+		identifiers.append((channelId, c.name,c.description))
+	return identifiers
 	
 		
 

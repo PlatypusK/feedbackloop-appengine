@@ -18,7 +18,7 @@
 
   </head>
 
-  <body>
+  <body style="overflow-wrap: break-word">
 
     <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,9 +28,9 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
                 <ul class="nav navbar-nav">
-                    <li><a class="nav-link" href="{{ url_for('user_main') }}">Home</a></li>
-					<li><a class="nav-link" href="{{ url_for('view_owned_channels') }}">Your Channels</a></li>
-                    <li><a class="nav-link" href="{{ url_for('subscribed_channels') }}">Subscribed Channels</a></li>
+                    <li class="nav-item"id="user_main"><a class="nav-link"  href="{{ url_for('user_main') }}">Home</a></li>
+					<li class="nav-item" id="view_owned_channels"><a class="nav-link"  href="{{ url_for('view_owned_channels') }}">Your Channels</a></li>
+                    <li class="nav-item" id="subscribed_channels"><a class="nav-link"  href="{{ url_for('subscribed_channels') }}">Subscribed Channels</a></li>
 
                 </ul>
             
@@ -60,6 +60,9 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="static/js/ie10-viewport-bug-workaround.js"></script>
 	<script src="static/js/feedbackloop-functions.js"></script>
+	<!-- Putting separate page javascript files at the very end so that jquery is loaded first -->
+	{% block scripts %}{% endblock %}
 
+	
   </body>
 </html>

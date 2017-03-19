@@ -10,9 +10,16 @@ from wtforms import BooleanField, StringField, PasswordField, validators, Hidden
 # class EmailPasswordForm(FlaskForm):
     # password = PasswordField('password', validators=[Required()])
 
-	
 
-	
+class AllForms(FlaskForm):
+	action=HiddenField()
+	payLoad=HiddenField()
+class UserMainForm(AllForms):
+	pass
+class ShowSurveyForm(AllForms):
+	pass
+class ShowSurveyResultsForm(AllForms):
+	pass
 class LoginForm(FlaskForm):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('Password', [
@@ -34,24 +41,16 @@ class NewChannelForm(FlaskForm):
 	channelname=StringField('Channel name', [validators.Length(min=4, max=25)])
 	description=StringField('Description',[validators.Length(min=4, max=100)])
 class OwnedChannelsForm(FlaskForm):
-	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
 	pass
-class OwnedChannelForm(FlaskForm):
+class OwnedChannelForm(AllForms):
 	channel_id_for_new_loop=HiddenField("No_loop_id");
 	channel_name=""
-	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
-
 class NewLoopForm(FlaskForm):
 	channel_id=HiddenField();
 	action=HiddenField();
-	"""using this form to pass information into the template. Needed for CSRF protection among other things"""
-class UserMainForm(FlaskForm):
-	pass
 class SubscribedChannelsForm(FlaskForm):
 	action=HiddenField()
 	payLoad=HiddenField()
 class ChannelSearchResults(FlaskForm):
 	action=HiddenField()
 	payLoad=HiddenField()
-
-	"""using this form to pass information into the template. Needed for CSRF protection among other things"""

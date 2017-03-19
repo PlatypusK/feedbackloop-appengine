@@ -3,6 +3,7 @@ import logging
 from flask import Flask, render_template,request, redirect, url_for,current_app, session, abort
 from flask_httpauth import HTTPBasicAuth
 from datastore_account import Account, storeNewUser,  get_user_verification_data_by_email
+import datastore_account
 from verification import  isPasswordCorrect,  get_new_verification_data
 import json
 import os
@@ -12,13 +13,10 @@ from flask_wtf.csrf import CSRFProtect
 from datastore_channel import Channel, getChannel
 from main import app, csrf, application_title
 from verification import auth
+import verification
 from datastore_channel import get_owned_channel_identifiers, verify_channel_owner, get_owned_channel_data, searchChannel
 from datastore_loop import publish_loop
 from actions import *
-
-
-
-
 
 
 
@@ -26,9 +24,6 @@ from actions import *
 def hello():
     return redirect(url_for('login'))
 	
-
-
-
 @app.route('/login', methods=['GET','POST'])
 def login():
 	form = LoginForm() if request.method == 'POST' else LoginForm(request.args)
@@ -42,34 +37,21 @@ def login():
 				session['userId']=str(verification_data[0])
 				return redirect(url_for('user_main'))
 			return render_template('login_page.html', form=form)
-	return render_template('login_page.html', form=form)		
-			
-		# user=getUser(request.form['email'])
-		# if isUser(user):
-			# if isPasswordCorrect(user, request.form['password']):
-				# session['email']=request.form['email']
-				# session['password']=request.form['password']
-				# logging.info('+-+-+-+-+-+'+str(user.get().key.id()))
-				# session['userId']=str(user.get().key.id())
-				# return redirect(url_for('user_main'))
-		# return render_template('login_page.html', form=form)
-		# logging.info("validate password here")
-		# logging.info(form.password.data)
-	# logging.info(form.errors.items())
-	# return render_template('login_page.html', form=form)
+	return render_template('login_page.html', form=form)
 	
 @app.route('/new_user', methods=['GET','POST'])
 def new_user():
 	form = RegistrationForm() if request.method == 'POST' else RegistrationForm(request.args)
 	if form.validate_on_submit():
 		logging.info('+/+/+/+/+')
-		user_exists=get_user_verification_data(form.email.data)
+		user_exists=datastore_account.get_user_verification_data_by_email(form.email.data)
 		if not user_exists: #Check that the user does not exist
-			verification_data=get_new_verification_data(form.email.data, form.password.data)
+			verification_data=verification.get_new_verification_data(form.email.data, form.password.data)
 			stored=storeNewUser(verification_data)
 			if stored:
 				return redirect(url_for('login',code=302))
 			return redirect(url_for('new_user',code=307))
+	logging.info("here")
 	return render_template('new_user.html', form=form)
 	
 @app.route('/forgot_password')
@@ -102,10 +84,11 @@ def subscribed_channels():
 	form=SubscribedChannelsForm()
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_SEARCH:
-
-			return redirect(url_for('channel_search_results'), code=307)
-			
-	return render_template('subscribed_channels.html', form=form)	
+			return actionSearchRedirect()
+		if request.form['action']==ACTION_DETAILS:
+			return actionViewDetails()
+	return actionShowSubscribedChannels()
+		
 	
 @app.route('/create_loop', methods=['GET','POST'])
 @auth.login_required
@@ -114,28 +97,28 @@ def create_loop():
 	logging.info('*+*+*+*+*+*')
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_PUBLISH:
-			logging.debug("publish")
-			if publish_loop(session.get('userId'), request.form['channel_id'], request.form['jsonString']):
-				form=UserMainForm()
-				return render_template('user_main.html',form=form)
-			abort(401)
-
+			return actionPublish()
 	form.channel_id.data=request.form['channel_id_for_new_loop']
 	return render_template('create_loop.html', form=form)
+
 	
 @app.route('/owned_channel', methods=['GET','POST'])
 @auth.login_required
 def owned_channel():
-	if request.form.has_key('channel_id_for_new_loop'):
-		return redirect(url_for('create_loop'),code=307)
-	# if 'channel_id_for_new_loop' in request.form
+	if request.form.has_key('action'):
+		if request.form['action']==ACTION_CREATE_LOOP:
+			return actionCreateLoop()
+		if request.form['action']==ACTION_VIEW_LOOP_RESULTS:
+			return actionRedirectToLoopResults();
 	form=OwnedChannelForm()
 	channelId=request.form['channelid']
+	loopList=datastore_loop.getRecentExpiredLoops(7, channelId)
+	logging.info(loopList)
 	form.channel_id_for_new_loop.data=channelId
 	channel=get_owned_channel_data(session.get('userId'),channelId);
 	form.channel_name=channel.name
 	logging.info('++++++++')
-	return render_template('owned_channel.html', form=form)
+	return render_template('owned_channel.html', form=form, loop_list=loopList)
 
 @app.route('/view_owned_channels', methods=['GET','POST'])
 @auth.login_required
@@ -171,8 +154,30 @@ def new_channel():
 @app.route('/user_main', methods=['GET','POST'])
 @auth.login_required
 def user_main():
-	return render_template('user_main.html', title=application_title)
-
+	if request.form.has_key('action'):
+		if request.form['action']==ACTION_SHOW_SURVEY:
+			return actionRedirectToSurvey()
+	return actionShowWelcomeScreen()
+	
+"""This is the view method for showing plots and statistics from loops"""
+@app.route('/show_loop_results', methods=['GET','POST'])
+@auth.login_required
+def show_loop_results():
+	if request.form.has_key('action'):
+		if request.form['action']==ACTION_VIEW_LOOP_RESULTS:
+			return actionShowSurveyResults()
+	pass
+	
+	
+"""This is the view method for users to reply to posted surveys"""
+@app.route('/show_survey', methods=['GET','POST'])
+@auth.login_required
+def show_survey():
+	if request.form.has_key('action'):
+		if request.form['action']==ACTION_SUBMIT_REPLY:
+			return actionSubmitSurvey();
+	return actionShowSurvey()
+	
 @app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.

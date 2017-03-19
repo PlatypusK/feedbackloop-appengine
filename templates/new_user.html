@@ -6,7 +6,7 @@
       <div id="create_user">
 		
 
-		<form method='POST' action="{{url_for('login')}}">	
+		<form method='POST' action="{{url_for('new_user')}}">	
 			<dl>	
 			{{ form.hidden_tag() }}
 			{% from "formhelpers.html" import render_field %}

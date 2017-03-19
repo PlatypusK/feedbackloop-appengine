@@ -93,11 +93,12 @@ function publish(){
 	console.log(action);
 	action.value=ACTION_PUBLISH;
 	console.log(flaskForm);
-	$('#myModal').modal('show');
 	flaskForm.submit();
 }
 class Loop{
 	constructor(){
+		this.messageBox=document.getElementById('messageBox')
+		this.message=messageBox.value;
 		var rowDiv=document.getElementById("rowId");
 		var loopElementsCollection=rowDiv.children;
 		var arr=Array.prototype.slice.call( loopElementsCollection );
@@ -110,10 +111,14 @@ class Loop{
 		}
 	}
 	toJson(){
-		return JSON.stringify(this.loops)
+		return JSON.stringify([new MessageItem(this.message),this.loops])
 	}
 }
-
+class MessageItem{
+	constructor(messageValue){
+		this.message=messageValue;
+	}
+}
 class LoopItem{
 	constructor(numId){
 		this.question=LoopItem.getQuestion(numId)

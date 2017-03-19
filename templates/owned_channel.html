@@ -10,14 +10,26 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-
-	  <form method='POST' action="{{url_for('owned_channel')}}"  >
-	  	  {{ form.hidden_tag() }}
         <h1 class="display-3">{{form.channel_name}}</h1>
         <p>Click "View details" to look at data from recent loops</p>
-        <p><input class="btn btn-primary btn-lg" formmethod='POST'  value="Create new loop &raquo;" name="create_loop" href="{{ url_for('owned_channel') }}" type="submit"></input></p>
-      </form>
+        <p><button class="btn btn-primary btn-lg"  name="create_loop" onclick="createNewLoop(this)">Create new loop &raquo;</button></p>
 	  </div>
     </div>
+	<div class="container">
+		<div class="row">
+				{% for item in loop_list %}
+					<div class="col-md-4">
+					<h6>Deadline on {{item.1}}</h6>
+					<p style="overflow-wrap: break-word">{{item.2}}</p>
+					<p><button type="submit" formmethod="post" class="btn btn-secondary" value={{item.0}} name="loopId" onclick="loopDetailsClicked(this)">View responses &raquo;</button></p>
+					</div>
+				{% endfor %}
+				</div>
+      </div>
+	  <form method='POST' id="flaskForm" action="{{url_for('owned_channel')}}">
+		{{ form.hidden_tag() }}
+	  </form>
 
 {% endblock %}
+
+{% block scripts %}<script src="static/js/owned_channel.js"></script>{% endblock %}

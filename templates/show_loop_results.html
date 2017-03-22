@@ -3,6 +3,7 @@
 {% block content %}
     <!-- Bootstrap core CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
+	<link href="static/css/jumbotron.css" rel="stylesheet">
     <!-- Custom styles for this template -->
 
 	
@@ -25,7 +26,7 @@
 			{% endfor %}
 		</div>
 	</div>
-	
+	 
 	<form method='POST' id="flaskForm" action="{{url_for('show_loop_results')}}">			
 		{{ form.hidden_tag() }}
 	</form>

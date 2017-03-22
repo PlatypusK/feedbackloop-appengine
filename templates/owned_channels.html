@@ -18,7 +18,7 @@
 
     <div class="container">
 
-			<form method='POST' action="{{url_for('view_owned_channels')}}">
+			<form method='POST' id="flaskForm" action="{{url_for('view_owned_channels')}}">
 				{{ form.hidden_tag() }}
 				<div class="row">
 				{% for item in channel_list %}
@@ -31,5 +31,4 @@
 				</div>
 			</form>
       </div>
-	  
 {% endblock %}

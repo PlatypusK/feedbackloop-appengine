@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 import logging
-from hashlib import pbkdf2_hmac, sha1
+from pbkdf2 import PBKDF2
+
 from os import urandom
 from base64 import b64encode
 from flask_httpauth import HTTPBasicAuth
@@ -19,7 +20,9 @@ def getRandomString(length):
 """Verifies that when you hash the given password with the users salt, the hashes are the same, the third argument is a tuple containing email, salt and salted hashed password"""
 def isPasswordCorrect(password, email_salt_saltedpassword):
 	# h1=scrypt(password,email_salt_saltedpassword[1])
-	h1=pbkdf2_hmac('sha512', password, email_salt_saltedpassword[1], 100000)
+	h1=PBKDF2( password, email_salt_saltedpassword[1], iterations=1000).read(64)
+	logging.info(hexlify(h1))
+	logging.info(email_salt_saltedpassword)
 	return hexlify(h1)==email_salt_saltedpassword[2]
 
 	
@@ -30,7 +33,8 @@ def get_new_verification_data(email, password):
 	# logging.info(s)
 	# salt = sha1(urandom(128)).hexdigest()
 	logging.info(salt)
-	salted_hashed_password=	pbkdf2_hmac('sha512', password, salt, 100000)
+	salted_hashed_password=	PBKDF2( password, salt, iterations=1000).read(64)
+	logging.info(salted_hashed_password)
 	salted_hashed_password=hexlify(salted_hashed_password)
 	logging.info(salted_hashed_password)
 	return (email,salt,salted_hashed_password)

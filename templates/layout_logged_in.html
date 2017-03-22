@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+	<link rel="manifest" href="/static/manifest.json">
+
+	
+	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+	<script src="static/js/onesignal_app_setup.js"></script>
+	<script type=text/javascript>
+		//setup root path for ajax
+		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	</script>
+
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Bootstrap presenting the Feedback Loop</title>
+    <title>Feedback Loop</title>
 
     <!-- Bootstrap core CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
@@ -15,6 +25,8 @@
     <!-- Custom styles for this template -->
     <link href="static/css/navbar-top-fixed.css" rel="stylesheet">
 	<link href="static/css/feedbackloop.css" rel="stylesheet">
+	<link href="static/css/jumbotron.css" rel="stylesheet">
+
 
   </head>
 
@@ -31,6 +43,7 @@
                     <li class="nav-item"id="user_main"><a class="nav-link"  href="{{ url_for('user_main') }}">Home</a></li>
 					<li class="nav-item" id="view_owned_channels"><a class="nav-link"  href="{{ url_for('view_owned_channels') }}">Your Channels</a></li>
                     <li class="nav-item" id="subscribed_channels"><a class="nav-link"  href="{{ url_for('subscribed_channels') }}">Subscribed Channels</a></li>
+					<li class="nav-item" id="log_out"><a class="nav-link"  href="{{ url_for('log_out') }}">Log Out</a></li>
 
                 </ul>
             
@@ -48,6 +61,7 @@
     </div>
 
 
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -56,13 +70,13 @@
     <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script> -->
     <script>window.jQuery 	|| document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="static/js/bootstrap.min.js"></script>
+	<script src="static/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="static/js/ie10-viewport-bug-workaround.js"></script>
 	<script src="static/js/feedbackloop-functions.js"></script>
 	<!-- Putting separate page javascript files at the very end so that jquery is loaded first -->
 	{% block scripts %}{% endblock %}
-
+	<script src="static/js/push_subscription.js"></script>
 	
   </body>
 </html>

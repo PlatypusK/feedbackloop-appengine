@@ -10,5 +10,6 @@ function searchChannel(){
 	console.log(searchForm);
 	searchForm.submit();
 }
-function channelDetails(detailsButton):
+function channelDetails(detailsButton){
+}
 	

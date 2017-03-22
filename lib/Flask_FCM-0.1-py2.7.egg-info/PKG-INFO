@@ -1,0 +1,15 @@
+Metadata-Version: 1.0
+Name: Flask-FCM
+Version: 0.1
+Summary: Flask Extension for using Firebase Cloud Messaging service
+Home-page: https://github.com/senseobservationsystems/flask-fcm
+Author: Ricky Hariady
+Author-email: ricky@sense-os.nl
+License: UNKNOWN
+Description: 
+        Flask-FCM
+        -------------
+        
+        Flask Extension for using Firebase Cloud Messaging service
+        
+Platform: any

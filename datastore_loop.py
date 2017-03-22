@@ -4,6 +4,7 @@ from datastore_channel import verify_channel_owner
 from datetime import datetime, timedelta
 import json
 import datastore_account
+import datastore_channel
 
 	
 	
@@ -37,8 +38,11 @@ def publish_loop(user_id, channel_id, jsonString):
 		return False
 	newLoop = Loop(onChannel=long(channel_id),loopItems=jsonString,\
 		expiresOn=datetime.now()+timedelta(hours=24))
-	newLoop.put()
-	return True
+	key=newLoop.put()
+	if(key):
+		logging.info('published')
+		datastore_channel.notifyAllSubscribers(channel_id)
+	return key
 def getActiveLoops(channels):
 	"""Expects a list of tuples of channelId, name, description), returns a list of tuples of (channelId,channelName, channelDescription, activeLoopId, loopItems)"""
 	loops=[]

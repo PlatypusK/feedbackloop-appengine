@@ -20,16 +20,16 @@ class ShowSurveyForm(AllForms):
 	pass
 class ShowSurveyResultsForm(AllForms):
 	pass
-class LoginForm(FlaskForm):
+class LoginForm(AllForms):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('Password', [
         validators.DataRequired()])
 
-class ForgotPasswordForm(FlaskForm):
+class ForgotPasswordForm(AllForms):
 	email=StringField('Email Address', [validators.Length(min=6, max=35)])
 	# recaptcha = RecaptchaField()
 
-class RegistrationForm(FlaskForm):
+class RegistrationForm(AllForms):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])
     password = PasswordField('New Password', [
         validators.DataRequired(),
@@ -37,20 +37,17 @@ class RegistrationForm(FlaskForm):
     ])
     confirm = PasswordField('Repeat Password')
 	
-class NewChannelForm(FlaskForm):
+class NewChannelForm(AllForms):
 	channelname=StringField('Channel name', [validators.Length(min=4, max=25)])
 	description=StringField('Description',[validators.Length(min=4, max=100)])
-class OwnedChannelsForm(FlaskForm):
+class OwnedChannelsForm(AllForms):
 	pass
 class OwnedChannelForm(AllForms):
 	channel_id_for_new_loop=HiddenField("No_loop_id");
 	channel_name=""
-class NewLoopForm(FlaskForm):
+class NewLoopForm(AllForms):
 	channel_id=HiddenField();
-	action=HiddenField();
-class SubscribedChannelsForm(FlaskForm):
-	action=HiddenField()
-	payLoad=HiddenField()
-class ChannelSearchResults(FlaskForm):
-	action=HiddenField()
-	payLoad=HiddenField()
+class SubscribedChannelsForm(AllForms):
+	pass
+class ChannelSearchResults(AllForms):
+	pass

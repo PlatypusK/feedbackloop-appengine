@@ -8,7 +8,7 @@ from flask_wtf import Form
 from forms import LoginForm, NewChannelForm, RegistrationForm
 from flask_wtf.csrf import CSRFProtect
 from datastore_channel import Channel, getChannel
-from hashlib import algorithms_available
+
 
 
 app = Flask(__name__)

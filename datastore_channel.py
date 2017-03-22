@@ -57,6 +57,10 @@ def getSubscribedChannelIdentifiers(user_id):
 		c=Channel.get_by_id(channelId)
 		identifiers.append((channelId, c.name,c.description))
 	return identifiers
+def notifyAllSubscribers(channelId):
+	channel=Channel.get_by_id(long(channelId))
+	if(len(channel.subscribers)!=0):
+		datastore_account.notifyAllSubscribers(channel.subscribers)
 	
 		
 

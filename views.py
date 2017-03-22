@@ -15,8 +15,11 @@ from main import app, csrf, application_title
 from verification import auth
 import verification
 from datastore_channel import get_owned_channel_identifiers, verify_channel_owner, get_owned_channel_data, searchChannel
+import datastore_channel
 from datastore_loop import publish_loop
 from actions import *
+
+
 
 
 
@@ -145,8 +148,8 @@ def new_channel():
 		logging.info('validated------new_channel-------'+
 			request.form['channelname']+'-------'+request.form['description'])
 		logging.info(session.get('userId'))
-		writeChannel(int(session.get('userId')),request.form['channelname'],request.form['description'])
-		return redirect(url_for('owned_channel', channelid=id))
+		datastore_channel.writeChannel(int(session.get('userId')),request.form['channelname'],request.form['description'])
+		return redirect(url_for('view_owned_channels'))
 	logging.info(form.errors.items())
 	return render_template('create_channel.html', form=form)
 
@@ -177,7 +180,30 @@ def show_survey():
 		if request.form['action']==ACTION_SUBMIT_REPLY:
 			return actionSubmitSurvey();
 	return actionShowSurvey()
-	
+
+"""This is the view method for users to log out"""
+@app.route('/log_out', methods=['GET'])
+@auth.login_required
+def log_out():
+	return actionLogOut();
+
+
+@app.route('/save_one_signal', methods=['POST'])
+@auth.login_required
+def save_one_signal():
+	"""
+	This is the view method for users to give the userid for one signal to the server.
+	We need this to send notifications. Flow is user subscribes to OneSignal through javascript,
+	user gives OneSignal id to server. Server stores OneSignal id in account, Server loads the 
+	OneSignal id from the subscribed accounts when a loop is published and sends a notification
+	to all subscribers. 
+	"""
+	logging.info("save one signal user id")
+	if request.form.has_key('action'):
+		if request.form['action']==ACTION_SAVE_ONE_SIGNAL:
+			return actionSaveOneSignalUid();
+	abort(400)
+
 @app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.

@@ -1,5 +1,10 @@
 from google.appengine.ext import ndb
 import logging
+import json
+import util_notify
+
+
+
 
 class Account(ndb.Model):
 	username = ndb.StringProperty(indexed=False)
@@ -11,12 +16,13 @@ class Account(ndb.Model):
 	published_loops=ndb.KeyProperty(repeated=True, indexed=False)
 	received_loops=ndb.KeyProperty(repeated=True, indexed=False)
 	answeredLoops=ndb.IntegerProperty(repeated=True, indexed=False)
-    
+	oneSignalUid=ndb.StringProperty(indexed=False)
+
 		
 
 
-"""Returns True if new user was successfully created, False otherwise, expects a tuple with email, salt and a salted hashed password in that order"""
 def storeNewUser(verification_data):
+	"""Returns True if new user was successfully created, False otherwise, expects a tuple with email, salt and a salted hashed password in that order"""
 	account=Account(email=verification_data[0],salt=verification_data[1], salted_password=verification_data[2]) #create entity
 	key=account.put ()  #store entity
 	if key:
@@ -25,10 +31,30 @@ def storeNewUser(verification_data):
 		return False
 
 def isOwnerOfChannel(channelId):
+	"""This needs to be fleshed out"""
 	return True
+def setOneSignalId(userId, oneSignalUid):
+	"""Sets the id for sending signals to OneSignal, returns the user id if successfully saved"""
 
-"""Returns a tuple containing the users id, salted and hashed password and the randomly generated salt if the user exists and is unique, otherwise returns false"""
+	user=Account.get_by_id(long(userId))
+	if(user.oneSignalUid==oneSignalUid):
+		return False
+	user.oneSignalUid=oneSignalUid
+	return user.put()
+def getOneSignalId(userId):
+	"""Returns The id for sending notifications to oneSignal or an empty string if none is registered"""
+	user=Account.get_by_id(long(userId))
+	if(user.oneSignalUid != None):
+		return user.oneSignalUid
+	else:
+		return ''
 def get_user_verification_data_by_email(email):
+	"""
+	Returns a tuple containing the users id, salted and hashed password and the randomly generated salt 
+	if the user exists and is unique, otherwise returns false. Use get_user_verification_data_by_id instead if possible
+	as this uses a query and is therefore expensive and slow comparatively
+	"""
+
 	query=Account.query(Account.email==email)
 	user=query.get()
 	if user==None:
@@ -37,12 +63,17 @@ def get_user_verification_data_by_email(email):
 		return (user.key.id(),user.salt, user.salted_password)
 	return False
 def get_user_verification_data_by_id(user_id):
+	"""
+	Returns a tuple containing the users id, salted and hashed password and the randomly generated salt 
+	if the user exists and is unique, otherwise returns false. Faster than by email as it does not run a query.
+	"""
 	user=Account.get_by_id(long(user_id))
 	if user==None:
 		return False
 	return (user.key.id(),user.salt, user.salted_password)
 	
 def addChannelToSubscribed(userId,channelId):
+	"""Adds the channelId to the list of subscribed channels"""
 	user=Account.get_by_id(long(userId))
 	if user==None:
 		return False
@@ -62,4 +93,16 @@ def setAnsweredLoop(userId, loopId):
 	acc=Account.get_by_id(long(userId));
 	acc.answeredLoops.append(long(loopId));
 	acc.put()
-    
+def notifyAllSubscribers(subscriberList):
+	uidList=[]
+	for sub in subscriberList:
+		acc=acc=Account.get_by_id(sub)
+		if(acc):
+			if(acc.oneSignalUid):
+				logging.info('subscriber onesignal id: ')
+				logging.info(acc.oneSignalUid)
+				uidList.append(acc.oneSignalUid)
+	if len(uidList)!=0:
+		util_notify.sendMessageToOneSignalUsers(uidList,"New content published on Feedback Loop") 
+
+	

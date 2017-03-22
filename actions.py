@@ -15,6 +15,7 @@ ACTION_SHOW_SURVEY='Show survey';
 ACTION_SHOW_LOOP_RESULTS='Show loop results'
 ACTION_CREATE_LOOP='create_loop'
 ACTION_VIEW_LOOP_RESULTS='view loop results'
+ACTION_SAVE_ONE_SIGNAL='save one signal uid'
 
 """payLoad parameter in request.form should be set to the search request prior to invoking this function"""
 def actionSearchChannel():
@@ -74,3 +75,10 @@ def actionShowSurveyResults():
 	else:
 		form.payLoad.data=replies
 	return render_template('show_loop_results.html', form=form, index=index);
+def actionLogOut():
+	session.clear()
+	return redirect(url_for('login'))
+def actionSaveOneSignalUid():
+	"""Expects form payload to be a string containing the new OneSignalUid"""
+	datastore_account.setOneSignalId(session.get('userId'), request.form['payLoad'])
+	return ""

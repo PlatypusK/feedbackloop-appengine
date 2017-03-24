@@ -20,7 +20,7 @@ class Account(ndb.Model):
 
 		
 
-
+@ndb.transactional(retries=10)
 def storeNewUser(verification_data):
 	"""Returns True if new user was successfully created, False otherwise, expects a tuple with email, salt and a salted hashed password in that order"""
 	account=Account(email=verification_data[0],salt=verification_data[1], salted_password=verification_data[2]) #create entity
@@ -29,6 +29,7 @@ def storeNewUser(verification_data):
 		return True
 	else:
 		return False
+
 
 def isOwnerOfChannel(channelId):
 	"""This needs to be fleshed out"""

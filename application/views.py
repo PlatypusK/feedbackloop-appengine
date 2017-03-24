@@ -25,7 +25,7 @@ from actions import *
 
 @app.route('/')
 def hello():
-    return redirect(url_for('login'))
+    return redirect(url_for('login'),301)
 	
 @app.route('/login', methods=['GET','POST'])
 def login():

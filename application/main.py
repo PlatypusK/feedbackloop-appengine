@@ -8,15 +8,19 @@ from flask_wtf import Form
 from forms import LoginForm, NewChannelForm, RegistrationForm
 from flask_wtf.csrf import CSRFProtect
 from datastore_channel import Channel, getChannel
+import flask_csrf_test_client
+
+
+
 
 
 
 app = Flask(__name__)
+app.test_client_class=flask_csrf_test_client.FlaskClient
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or \
     'e5ac358c-f0bf-11e5-9e39-d3b532c10a28'
 app.debug=True
-
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 application_title='Feedback Loop'

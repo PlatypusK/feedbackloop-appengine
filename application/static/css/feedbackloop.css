@@ -40,15 +40,15 @@ a:hover {
 .surveyinput{
 	padding-bottom: 25px;
 }
-/* .searchfield{ */
+.searchfield{
 	/* vertical-align: middle; */
-	/* resize: none; */
+	resize: none;
 	/* display: block; */
 	/* float: left; */
-	/* width: 200px; */
+	width: calc(50%);
 	/* height: 40px; */
 	/* padding-right: 20px; */
-/* } */
+}
 .messagefield{
 	vertical-align: left;
 	

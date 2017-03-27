@@ -9,6 +9,12 @@ import datastore_channel
 	
 	
 class Loop(ndb.Model):
+	"""
+	Note that I have chosen to use static functions instead of class member functions to keep transactions less complex
+	i.e functional paradigm. If I had used class methods instead, the instances would be mutable for far longer. This means
+	that transactions would take longer and concurrency might suffer. I have also avoided the usage of datastore classes outside of the
+	modules they are defined. This should reduce the risk of transaction difficulties.
+	"""
 	onChannel=ndb.IntegerProperty(indexed=True)
 	loopItems=ndb.StringProperty(indexed=False)#1 json string on the form (generalized for more qustions and answers [{"question":"Question 1","answers":["Answer 1a","Answer 1b"]},{"question":"Question 2","answers":["Answer 2a","Answer 2b","Answer 2c"]}]
 	replies=ndb.StringProperty(indexed=False, repeated=True)#1 json string per reply
@@ -54,6 +60,8 @@ def getActiveLoops(channels):
 		for loop in activeLoopsOnChannel:
 			loops.append((channel[0],channel[1],channel[2],loop.key.id(),loop.loopItems))
 	return loops
+	
+@ndb.transactional(retries=10,xg=True)
 def storeLoopReply(userId,replyString, replyObject):
 	logging.info(userId)
 	logging.info(replyString)

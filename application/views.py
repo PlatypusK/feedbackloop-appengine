@@ -12,7 +12,7 @@ from forms import *
 from flask_wtf.csrf import CSRFProtect
 from datastore_channel import Channel, getChannel
 from main import app, csrf, application_title
-from verification import auth
+from verification import auth, login_required
 import verification
 from datastore_channel import get_owned_channel_identifiers, verify_channel_owner, get_owned_channel_data, searchChannel
 import datastore_channel
@@ -36,7 +36,7 @@ def login():
 			if isPasswordCorrect(request.form['password'], verification_data):
 				session['email']=request.form['email']
 				session['password']=request.form['password']
-				logging.info('+-+-+-+-+-+'+str(verification_data[0]))
+				logging.debug('+-+-+-+-+-+'+str(verification_data[0]))
 				session['userId']=str(verification_data[0])
 				return redirect(url_for('user_main'))
 			return render_template('login_page.html', form=form)
@@ -46,15 +46,18 @@ def login():
 def new_user():
 	form = RegistrationForm() if request.method == 'POST' else RegistrationForm(request.args)
 	if form.validate_on_submit():
-		logging.info('+/+/+/+/+')
+		logging.debug('+/+/+/+/+')
 		user_exists=datastore_account.get_user_verification_data_by_email(form.email.data)
 		if not user_exists: #Check that the user does not exist
+			logging.debug('user does not exist')
 			verification_data=verification.get_new_verification_data(form.email.data, form.password.data)
 			stored=storeNewUser(verification_data)
 			if stored:
+				logging.debug('user stored')
 				return redirect(url_for('login',code=302))
 			return redirect(url_for('new_user',code=307))
-	logging.info("here")
+		logging.debug('tried to create existing user')
+	logging.debug("here")
 	return render_template('new_user.html', form=form)
 	
 @app.route('/forgot_password')
@@ -76,9 +79,9 @@ def channel_search_results():
 			return actionSubscribe()
 	else:
 		abort(400)
-	# logging.info(request.args)
+	# logging.debug(request.args)
 	
-	# logging.info(searchResult)
+	# logging.debug(searchResult)
 	# form=ChannelSearchResults()
 	# return render_template('channel_search_results.html',form=form, channel_list=searchResult)
 	
@@ -94,10 +97,10 @@ def subscribed_channels():
 		
 	
 @app.route('/create_loop', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def create_loop():
 	form=NewLoopForm()
-	logging.info('*+*+*+*+*+*')
+	logging.debug('*+*+*+*+*+*')
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_PUBLISH:
 			return actionPublish()
@@ -106,7 +109,7 @@ def create_loop():
 
 	
 @app.route('/owned_channel', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def owned_channel():
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_CREATE_LOOP:
@@ -116,24 +119,24 @@ def owned_channel():
 	form=OwnedChannelForm()
 	channelId=request.form['channelid']
 	loopList=datastore_loop.getRecentExpiredLoops(7, channelId)
-	logging.info(loopList)
+	logging.debug(loopList)
 	form.channel_id_for_new_loop.data=channelId
 	channel=get_owned_channel_data(session.get('userId'),channelId);
 	form.channel_name=channel.name
-	logging.info('++++++++')
+	logging.debug('++++++++')
 	return render_template('owned_channel.html', form=form, loop_list=loopList)
 
 @app.route('/view_owned_channels', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def view_owned_channels():
 	form = OwnedChannelsForm() if request.method == 'POST' else OwnedChannelsForm(request.args)
 	if request.method=='POST':
-		logging.info('-*/-*/-*/')
-		logging.info(request.form)
+		logging.debug('-*/-*/-*/')
+		logging.debug(request.form)
 		id=request.form['channelid']
-		logging.info(id)
+		logging.debug(id)
 		if(verify_channel_owner(session.get('userId'),id)):
-			logging.info("Redirect to owned channel")
+			logging.debug("Redirect to owned channel")
 			return redirect(url_for('owned_channel'),code=307)
 		abort(401)
 	channel_list=get_owned_channel_identifiers(session.get('userId'))
@@ -141,7 +144,7 @@ def view_owned_channels():
 	return render_template('owned_channels.html', form=form, channel_list=channel_list)
 
 @app.route('/new_channel', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def new_channel():
 	form = NewChannelForm() if request.method == 'POST' else NewChannelForm(request.args)
 	if form.validate_on_submit():
@@ -155,7 +158,7 @@ def new_channel():
 
 """This is the view method for the first screen you see upon login"""
 @app.route('/user_main', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def user_main():
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_SHOW_SURVEY:
@@ -164,7 +167,7 @@ def user_main():
 	
 """This is the view method for showing plots and statistics from loops"""
 @app.route('/show_loop_results', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def show_loop_results():
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_VIEW_LOOP_RESULTS:
@@ -174,22 +177,24 @@ def show_loop_results():
 	
 """This is the view method for users to reply to posted surveys"""
 @app.route('/show_survey', methods=['GET','POST'])
-@auth.login_required
+@login_required
 def show_survey():
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_SUBMIT_REPLY:
 			return actionSubmitSurvey();
-	return actionShowSurvey()
+		if request.form['action']==ACTION_SHOW_SURVEY:
+			return actionShowSurvey()
+	abort(400)
 
 """This is the view method for users to log out"""
 @app.route('/log_out', methods=['GET'])
-@auth.login_required
+@login_required
 def log_out():
 	return actionLogOut();
 
 
 @app.route('/save_one_signal', methods=['POST'])
-@auth.login_required
+@login_required
 def save_one_signal():
 	"""
 	This is the view method for users to give the userid for one signal to the server.
@@ -198,7 +203,7 @@ def save_one_signal():
 	OneSignal id from the subscribed accounts when a loop is published and sends a notification
 	to all subscribers. 
 	"""
-	logging.info("save one signal user id")
+	logging.debug("save one signal user id")
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_SAVE_ONE_SIGNAL:
 			return actionSaveOneSignalUid();

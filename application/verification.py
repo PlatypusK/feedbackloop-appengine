@@ -1,6 +1,8 @@
 from google.appengine.ext import ndb
 import logging
 from pbkdf2 import PBKDF2
+from functools import wraps
+from flask import g, request, redirect, url_for
 
 from os import urandom
 from base64 import b64encode
@@ -40,8 +42,27 @@ def get_new_verification_data(email, password):
 	return (email,salt,salted_hashed_password)
     
 
-@auth.verify_password
-def verify_password(email, password):
+
+def login_required(f):
+	"""
+	Decorator function for views that require a login.
+	using the decorator @login_required will call this function
+	prior to giving access to the view.
+	"""
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		logging.info('12345678')
+		if not verify_user():
+			return redirect(url_for('login', next=request.url))
+		return f(*args, **kwargs)
+	return decorated_function
+
+def verify_user():
+	"""
+	Checks that the userId and password saved in Flasks
+	secure session cookie matches. The userId and password should
+	be saved in the cookie on login. 
+	"""
 	logging.info(session.get('email'))
 	logging.info(session.get('password'))
 	logging.info(session.get('userId'))
@@ -55,6 +76,22 @@ def verify_password(email, password):
 			else:
 				return False
 	return False
+	
+# @auth.verify_password
+# def verify_password(email, password):
+	# logging.info(session.get('email'))
+	# logging.info(session.get('password'))
+	# logging.info(session.get('userId'))
+	# if('userId' in session):
+		# user_salt_saltedpassword=get_user_verification_data_by_id(session.get('userId'))
+		# #if user exists
+		# logging.info(user_salt_saltedpassword)
+		# if(user_salt_saltedpassword):
+			# if isPasswordCorrect(session.get('password'),user_salt_saltedpassword):
+				# return True
+			# else:
+				# return False
+	# return False
 		#user=getUser(session.get('email'))
 		#if isUser(session):
 		#	if isPasswordCorrect(user, session.get('password')):

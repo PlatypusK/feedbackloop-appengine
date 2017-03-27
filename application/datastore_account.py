@@ -7,6 +7,12 @@ import util_notify
 
 
 class Account(ndb.Model):
+	"""
+	Note that I have chosen to use static functions instead of class member functions to keep transactions less complex
+	i.e functional paradigm. If I had used class methods instead, the instances would be mutable for far longer. This means
+	that transactions would take longer and concurrency might suffer. I have also avoided the usage of datastore classes outside of the
+	modules they are defined. This should reduce the risk of transaction difficulties.
+	"""
 	username = ndb.StringProperty(indexed=False)
 	email = ndb.StringProperty(indexed=True)
 	salt = ndb.StringProperty(indexed=False)
@@ -31,9 +37,7 @@ def storeNewUser(verification_data):
 		return False
 
 
-def isOwnerOfChannel(channelId):
-	"""This needs to be fleshed out"""
-	return True
+@ndb.transactional(retries=10)
 def setOneSignalId(userId, oneSignalUid):
 	"""Sets the id for sending signals to OneSignal, returns the user id if successfully saved"""
 
@@ -72,6 +76,7 @@ def get_user_verification_data_by_id(user_id):
 	if user==None:
 		return False
 	return (user.key.id(),user.salt, user.salted_password)
+
 	
 def addChannelToSubscribed(userId,channelId):
 	"""Adds the channelId to the list of subscribed channels"""

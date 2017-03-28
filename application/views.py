@@ -71,6 +71,7 @@ def about():
 	return render_template('about.html', title=application_title, message=message)	
 
 @app.route('/channel_search_results', methods=['GET','POST'])
+@login_required
 def channel_search_results():
 	if request.form.has_key('action'):
 		if request.form['action'] == ACTION_SEARCH:
@@ -86,6 +87,7 @@ def channel_search_results():
 	# return render_template('channel_search_results.html',form=form, channel_list=searchResult)
 	
 @app.route('/subscribed_channels', methods=['GET','POST'])
+@login_required
 def subscribed_channels():
 	form=SubscribedChannelsForm()
 	if request.form.has_key('action'):

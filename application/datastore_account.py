@@ -7,12 +7,6 @@ import util_notify
 
 
 class Account(ndb.Model):
-	"""
-	Note that I have chosen to use static functions instead of class member functions to keep transactions less complex
-	i.e functional paradigm. If I had used class methods instead, the instances would be mutable for far longer. This means
-	that transactions would take longer and concurrency might suffer. I have also avoided the usage of datastore classes outside of the
-	modules they are defined. This should reduce the risk of transaction difficulties.
-	"""
 	username = ndb.StringProperty(indexed=False)
 	email = ndb.StringProperty(indexed=True)
 	salt = ndb.StringProperty(indexed=False)

@@ -3,12 +3,7 @@ import datastore_account
 
 
 class Channel(ndb.Model):
-	"""
-	Note that I have chosen to use static functions instead of class member functions to keep transactions less complex
-	i.e functional paradigm. If I had used class methods instead, the instances would be mutable for far longer. This means
-	that transactions would take longer and concurrency might suffer. I have also avoided the usage of datastore classes outside of the
-	modules they are defined. This should reduce the risk of transaction difficulties.
-	"""
+	"""Appengine entity for publishing channels"""
 	owner=ndb.IntegerProperty(indexed=True) #id of the Account entity that owns this channel
 	name=ndb.StringProperty(indexed=True) 
 	subscribers=ndb.IntegerProperty(repeated=True) #ids of the Accounts that subscribe to this channel
@@ -34,9 +29,15 @@ def get_owned_channel_identifiers(user_id):
 	else:
 		return []
 def verify_channel_owner(ownerid,channelid):
-	"""Checks that the ownerid given is the actual owner of the channel. 
-	Use this to test that the logged in user is the actual owner of the channel"""
-	return Channel.get_by_id(long(channelid)).owner==long(ownerid)
+	"""
+	Checks that the ownerid given is the actual owner of the channel. 
+	Use this to test that the logged in user is the actual owner of the channel
+	"""
+	c=Channel.get_by_id(long(channelid))
+	if c is not None:
+		return c.owner==long(ownerid)
+	else:
+		return False
 def get_owned_channel_data(ownerid,channelid):
 	if not verify_channel_owner(ownerid,channelid):
 		return None

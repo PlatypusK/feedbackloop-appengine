@@ -5,16 +5,12 @@ from datetime import datetime, timedelta
 import json
 import datastore_account
 import datastore_channel
+import random
 
 	
 	
 class Loop(ndb.Model):
-	"""
-	Note that I have chosen to use static functions instead of class member functions to keep transactions less complex
-	i.e functional paradigm. If I had used class methods instead, the instances would be mutable for far longer. This means
-	that transactions would take longer and concurrency might suffer. I have also avoided the usage of datastore classes outside of the
-	modules they are defined. This should reduce the risk of transaction difficulties.
-	"""
+	"""Appengine entity definition for surveys"""
 	onChannel=ndb.IntegerProperty(indexed=True)
 	loopItems=ndb.StringProperty(indexed=False)#1 json string on the form (generalized for more qustions and answers [{"question":"Question 1","answers":["Answer 1a","Answer 1b"]},{"question":"Question 2","answers":["Answer 2a","Answer 2b","Answer 2c"]}]
 	replies=ndb.StringProperty(indexed=False, repeated=True)#1 json string per reply
@@ -22,6 +18,7 @@ class Loop(ndb.Model):
 	expiresOn=ndb.DateTimeProperty(indexed=True)#What is the deadline for answering
 
 class LoopItem:
+	"""Utility class to load certain properties of a survey from the stored json string"""
 	def __init__(self, jsonString):
 		self.loaded=json.loads(jsonString)
 		self.messagePos=0
@@ -33,8 +30,58 @@ class LoopItem:
 		items=self.loaded[self.questionPos]
 		return items
 
+class ReplyShard(ndb.Model):
+	"""
+	Shards a loop reply to avoid congestion in cases of a lot of subscribers replying
+	simultaneously
+	"""
+	replies=ndb.StringProperty(indexed=False,repeated=True)
+	nrShards=ndb.IntegerProperty(indexed=False,repeated=False)#Store the number of shards in the first shard
+	def __getAllReplyShards(self,loopId):
+		stringLoop=str(loopId)
+		replies=[]
+		logging.info(self.nrShards)
+		i=1
+		while i<self.nrShards:
+			shard=ReplyShard.get_by_id(stringLoop+"_"+str(i))
+			if shard is not None:
+				replies.append(shard.replies)
+			i+=1
+		return replies
+	def __putShard(self, loopId, replyString):
+		index=random.randint(1, self.nrShards)
+		shardStringId=str(loopId)+"_"+str(index)
+		shard=ReplyShard.get_by_id(shardStringId)
+		if(shard is None):
+			shard=ReplyShard(id=shardStringId)
+			shard.replies=[]
+		shard.replies.append(replyString)
+		shard.put()
+	@staticmethod
+	def getAllReplies(loopId):
+		replyZeroIndex=str(loopId)+'_'+str(0)
+		shardZero=ReplyShard.get_by_id(replyZeroIndex)
+		return shardZero.__getAllReplyShards(loopId)
+	@staticmethod
+	@ndb.transactional(retries=10,xg=True)
+	def putReply(loopId, replyString):
+		replyZeroIndex=str(loopId)+'_'+str(0)
+		shardZero=ReplyShard.get_by_id(replyZeroIndex)
+		if(shardZero is None):
+			raise ValueError('loop reply not initialized, zero indexed reply does not exist')
+		shardZero.__putShard(loopId,replyString)
+	@staticmethod
+	@ndb.transactional(retries=10)
+	def initShard(loopId, nrShard):
+		"""
+		Should be called when loop is created. Stores the number of shards
+		in the 0-indexed shard
+		"""
+		replyZeroIndex=str(loopId)+'_'+str(0)
+		shard=ReplyShard(id=(replyZeroIndex))
+		shard.nrShards=nrShard
+		shard.put()
 		
-
 def publish_loop(user_id, channel_id, jsonString):
 	logging.info(user_id)
 	logging.info(channel_id)
@@ -45,6 +92,7 @@ def publish_loop(user_id, channel_id, jsonString):
 	newLoop = Loop(onChannel=long(channel_id),loopItems=jsonString,\
 		expiresOn=datetime.now()+timedelta(hours=24))
 	key=newLoop.put()
+	ReplyShard.initShard(key.id(),20) #creates index 0 of replyshards
 	if(key):
 		logging.info('published')
 		datastore_channel.notifyAllSubscribers(channel_id)
@@ -61,23 +109,24 @@ def getActiveLoops(channels):
 			loops.append((channel[0],channel[1],channel[2],loop.key.id(),loop.loopItems))
 	return loops
 	
-@ndb.transactional(retries=10,xg=True)
 def storeLoopReply(userId,replyString, replyObject):
-	logging.info(userId)
-	logging.info(replyString)
-	logging.info(replyObject)
+	# logging.info(userId)
+	# logging.info(replyString)
+	# logging.info(replyObject)
 	loopId=replyObject['loopId']
-	loop=Loop.get_by_id(long(loopId))
-	loop.replies.append(json.dumps(replyObject['replies']))
-	loop.put()
+	# loop=Loop.get_by_id(long(loopId))
+	# loop.replies.append(json.dumps(replyObject['replies']))
+	# loop.put()
+	ReplyShard.putReply(loopId,json.dumps(replyObject['replies']))
 	datastore_account.setAnsweredLoop(userId,loopId)
-def getRecentExpiredLoops(fromDaysBack, channelId):
+def getRecentExpiredLoops(fromDaysBack=7, channelId="0"):
 	recentLoops=Loop.query(Loop.onChannel==long(channelId), Loop.expiresOn>(datetime.now()-timedelta(days=fromDaysBack))).fetch(1000)
 	logging.info("Answers:")
 	return [(loop.key.id(),loop.expiresOn.date(), LoopItem(loop.loopItems).getMessage()) for loop in recentLoops];
 def getResultJson(loopId):
 	loop=Loop.get_by_id(long(loopId))
-	return json.dumps([loop.loopItems,loop.replies])
+	repliesFromShards=ReplyShard.getAllReplies(loopId)
+	return json.dumps([loop.loopItems,repliesFromShards])
 def countQuestions(loopId):
 	loop=Loop.get_by_id(long(loopId))
 	return len(LoopItem(loop.loopItems).getItems());

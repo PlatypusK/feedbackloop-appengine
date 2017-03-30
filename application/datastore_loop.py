@@ -45,7 +45,7 @@ class ReplyShard(ndb.Model):
 		while i<self.nrShards:
 			shard=ReplyShard.get_by_id(stringLoop+"_"+str(i))
 			if shard is not None:
-				replies.append(shard.replies)
+				replies.extend(shard.replies)
 			i+=1
 		return replies
 	def __putShard(self, loopId, replyString):

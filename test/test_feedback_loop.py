@@ -119,6 +119,7 @@ class FeedbackloopTestCase(unittest.TestCase):
 			assert '<p>You should be redirected automatically to target URL: <a href="/view_owned_channels">/view_owned_channels</a>' in rv2.data
 	
 	def replyToSurvey(self):
+		pass
 		
 	def test_show_survey(self):
 		view_url='/show_survey'

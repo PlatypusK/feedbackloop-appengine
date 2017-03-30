@@ -93,7 +93,7 @@ function showPlot(qInst, plotIndex){
 		"header": {
 			"title": {
 				"text": qInst.question,
-				"fontSize": 22,
+				"fontSize": 14,
 				"font": "verdana"
 			}
 		},

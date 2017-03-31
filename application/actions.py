@@ -16,6 +16,7 @@ ACTION_SHOW_LOOP_RESULTS='Show loop results'
 ACTION_CREATE_LOOP='create_loop'
 ACTION_VIEW_LOOP_RESULTS='view loop results'
 ACTION_SAVE_ONE_SIGNAL='save one signal uid'
+ACTION_RESET_PASSWORD='reset password'
 
 """payLoad parameter in request.form should be set to the search request prior to invoking this function"""
 def actionSearchChannel():
@@ -56,11 +57,17 @@ def actionShowSurvey():
 	form=ShowSurveyForm()
 	return render_template('show_survey.html', form=form)
 def actionSubmitSurvey():
+	"""This saves a submitted reply to disk and redirects the user back to main screen"""
 	reply=request.form['payLoad'];
+	logging.info('198419841984')
 	logging.info(reply);
-	replyObject=json.loads(reply);
-	datastore_loop.storeLoopReply(session.get('userId'),reply, replyObject);
-	return redirect(url_for('user_main'),code=302)
+	try:
+		replyObject=json.loads(reply);
+	except ValueError as e:
+		abort(400)
+	if datastore_loop.storeLoopReply(session.get('userId'),reply, replyObject):
+		return redirect(url_for('user_main'),code=302)
+	abort(400)
 def actionCreateLoop():
 	return redirect(url_for('create_loop'),code=307)
 def actionRedirectToLoopResults():
@@ -82,3 +89,5 @@ def actionSaveOneSignalUid():
 	"""Expects form payload to be a string containing the new OneSignalUid"""
 	datastore_account.setOneSignalId(session.get('userId'), request.form['payLoad'])
 	return ""
+def actionResetPassword():
+	return redirect(url_for('login'))

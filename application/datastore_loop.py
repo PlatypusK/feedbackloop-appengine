@@ -48,6 +48,7 @@ class ReplyShard(ndb.Model):
 				replies.extend(shard.replies)
 			i+=1
 		return replies
+	@ndb.transactional(retries=10)
 	def __putShard(self, loopId, replyString):
 		index=random.randint(1, self.nrShards)
 		shardStringId=str(loopId)+"_"+str(index)
@@ -56,20 +57,19 @@ class ReplyShard(ndb.Model):
 			shard=ReplyShard(id=shardStringId)
 			shard.replies=[]
 		shard.replies.append(replyString)
-		shard.put()
+		return shard.put()
 	@staticmethod
 	def getAllReplies(loopId):
 		replyZeroIndex=str(loopId)+'_'+str(0)
 		shardZero=ReplyShard.get_by_id(replyZeroIndex)
 		return shardZero.__getAllReplyShards(loopId)
 	@staticmethod
-	@ndb.transactional(retries=10,xg=True)
 	def putReply(loopId, replyString):
 		replyZeroIndex=str(loopId)+'_'+str(0)
 		shardZero=ReplyShard.get_by_id(replyZeroIndex)
 		if(shardZero is None):
-			raise ValueError('loop reply not initialized, zero indexed reply does not exist')
-		shardZero.__putShard(loopId,replyString)
+			return False # loop reply not initialized, possibly loop does not exist
+		return shardZero.__putShard(loopId,replyString)
 	@staticmethod
 	@ndb.transactional(retries=10)
 	def initShard(loopId, nrShard):
@@ -113,12 +113,17 @@ def storeLoopReply(userId,replyString, replyObject):
 	# logging.info(userId)
 	# logging.info(replyString)
 	# logging.info(replyObject)
-	loopId=replyObject['loopId']
+	try:
+		loopId=replyObject['loopId']
+	except TypeError as e:
+		return False
 	# loop=Loop.get_by_id(long(loopId))
 	# loop.replies.append(json.dumps(replyObject['replies']))
 	# loop.put()
-	ReplyShard.putReply(loopId,json.dumps(replyObject['replies']))
-	datastore_account.setAnsweredLoop(userId,loopId)
+	if ReplyShard.putReply(loopId,json.dumps(replyObject['replies'])):
+		datastore_account.setAnsweredLoop(userId,loopId)
+		return True
+	return False
 def getRecentExpiredLoops(fromDaysBack=7, channelId="0"):
 	recentLoops=Loop.query(Loop.onChannel==long(channelId), Loop.expiresOn>(datetime.now()-timedelta(days=fromDaysBack))).fetch(1000)
 	logging.info("Answers:")

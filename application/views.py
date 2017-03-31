@@ -41,7 +41,6 @@ def login():
 				return redirect(url_for('user_main'))
 			return render_template('login_page.html', form=form)
 	return render_template('login_page.html', form=form)
-	
 @app.route('/new_user', methods=['GET','POST'])
 def new_user():
 	form = RegistrationForm() if request.method == 'POST' else RegistrationForm(request.args)
@@ -55,14 +54,21 @@ def new_user():
 			if stored:
 				logging.debug('user stored')
 				return redirect(url_for('login',code=302))
-			return redirect(url_for('new_user',code=307))
-		logging.debug('tried to create existing user')
-	logging.debug("here")
+		else:
+			logging.debug('tried to create existing user')
+			return render_template('new_user.html', form=form)
+	logging.debug("show view for creating new user")
 	return render_template('new_user.html', form=form)
 	
-@app.route('/forgot_password')
+@app.route('/forgot_password',methods=['GET','POST'])
 def forgot_password():
+	form = ForgotPasswordForm() if request.method == 'POST' else ForgotPasswordForm(request.args)
+	if form.validate_on_submit():
+		if request.form.has_key('action'):
+			if request.form['action']==ACTION_RESET_PASSWORD:
+				return actionResetPassword()
 	form=ForgotPasswordForm(request.args)
+	form.action.data=ACTION_RESET_PASSWORD
 	return render_template('forgot_password.html', form=form)
 	
 @app.route('/about')
@@ -174,7 +180,7 @@ def show_loop_results():
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_VIEW_LOOP_RESULTS:
 			return actionShowSurveyResults()
-	pass
+	abort(400)
 	
 	
 """This is the view method for users to reply to posted surveys"""

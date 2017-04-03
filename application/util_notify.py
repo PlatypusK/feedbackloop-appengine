@@ -1,4 +1,5 @@
 import logging
+import traceback
 import urllib2
 
 
@@ -19,6 +20,7 @@ def getOneSigToUsersPayload(oneSigUidList,message):
 	"}"
 def sendMessageToOneSignalUsers(oneSigUidList,message):
 	"""Sends a message to the One Signal devices specified by the list of ids in oneSigUidList"""
+	logging.info(oneSigUidList)
 	header=getOneSigToUsersHeader()
 	payload = getOneSigToUsersPayload(oneSigUidList,message)
 	req = urllib2.Request('https://onesignal.com/api/v1/notifications',payload,header)
@@ -26,11 +28,12 @@ def sendMessageToOneSignalUsers(oneSigUidList,message):
 		response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		if hasattr(e, 'reason'):
-			logging.error('We failed to reach a server.')
-			logging.error('Reason: ', e.reason)
+			logging.error('Failed to reach a server.')
+			logging.error(e)
 		elif hasattr(e, 'code'):
 			logging.error('The server couldn\'t fulfill the request.')
 			logging.error('Error code: ', e.code)
 	else:
 		# everything is fine
 		the_page = response.read()
+		

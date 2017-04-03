@@ -5,6 +5,8 @@ import flask
 import sys
 import logging
 from application import datastore_loop
+from application import datastore_account
+from application import datastore_channel
 from application import main
 from application import actions
 from google.appengine.api import memcache
@@ -12,6 +14,12 @@ from google.appengine.ext import ndb
 from google.appengine.ext import testbed
 from google.appengine.datastore import datastore_stub_util
 
+SALTED_HASHED_PASSWORD='salted_hashed_password'
+SALT='salt'
+MOCK_ONE_SIGNAL_ID='mock one signal'
+TEST_USER='testUser@user.user'
+TEST_CHANNEL='Test channel'
+TEST_DESCRIPTION='test description'
 
 class FeedbackloopTestCase(unittest.TestCase):
 	
@@ -289,5 +297,108 @@ class FeedbackloopTestCase(unittest.TestCase):
 	def doGoodLogin(self):
 		rv=self.login(self.goodUser,self.goodPass,False)
 		self.assertEqual(rv.status_code,302)
+	def storeNewUser(self):
+		response=datastore_account.storeNewUser((TEST_USER, SALT,SALTED_HASHED_PASSWORD))
+		self.assertEqual(response,True)
+		query=datastore_account.Account.query()
+		accounts=query.fetch(5)
+		acc=accounts[1]
+		self.assertEqual(acc.email,TEST_USER)
+		self.assertEqual(acc.salt,SALT)
+		self.assertEqual(acc.salted_password,SALTED_HASHED_PASSWORD)
+		return acc
+	def setGetOneSignalId(self, account):
+		accKey=datastore_account.setOneSignalId(account.key.id(),MOCK_ONE_SIGNAL_ID)
+		self.assertEqual(datastore_account.getOneSignalId(account.key.id()),[MOCK_ONE_SIGNAL_ID])
+	def getUserVerDataByEmail(self,account):
+		dat=datastore_account.get_user_verification_data_by_email(TEST_USER)
+		self.assertEqual((account.key.id(),SALT,SALTED_HASHED_PASSWORD),dat)
+	def getUserVerDataById(self,account):
+		dat=datastore_account.get_user_verification_data_by_id(account.key.id())
+		self.assertEquals((acc.key.id(),SALT,SALTED_HASHED_PASSWORD),dat)
+	def getSetSubscribeAccount(self,account):
+		assert datastore_account.addChannelToSubscribed('45','0')==False
+		assert datastore_account.addChannelToSubscribed(account.key.id(),5)==True
+		assert datastore_account.Account.get_by_id(account.key.id()).subscribed_to==[5]
+		assert datastore_account.getSubscribedChannels(account.key.id())==[5]
+	def setRemoveAnsweredLoop(self, account):
+		da=datastore_account
+		da.setAnsweredLoop(account.key.id(),5)
+		assert 5 in da.Account.get_by_id(account.key.id()).answeredLoops
+		l=da.removeAnsweredLoops(account.key.id(),[('','','',1,''),('','','',2,''),('','','',5,'')])
+		assert l==[('','','',1,''),('','','',2,'')]
+	def notifyAllSubscribedDevices(self,account):
+		da=datastore_account
+		a=da.notifyAllSubscribers(['d','b','c',account.key.id(),'f','e'])
+		assert 'mock one signal' in a
+	def emailToId(self,account):
+		da=datastore_account
+		# print da.emailToId(TEST_USER)
+	def test_datastore_account(self):
+		acc=self.storeNewUser()
+		self.setGetOneSignalId(acc)
+		acc=datastore_account.Account.get_by_id(acc.key.id())
+		self.getUserVerDataByEmail(acc)
+		self.getUserVerDataByEmail(acc)
+		self.getSetSubscribeAccount(acc)
+		self.setRemoveAnsweredLoop(acc)
+		self.notifyAllSubscribedDevices(acc)
+		self.emailToId(acc)
+	def writeGetChannel(self, userId):
+		dc=datastore_channel
+		cKey=dc.writeChannel(userId,TEST_CHANNEL, TEST_DESCRIPTION)
+		assert cKey is not None
+		channel=dc.getChannel(cKey.id())
+		assert channel.owner==userId
+		assert channel.name==TEST_CHANNEL
+		assert channel.description==TEST_DESCRIPTION
+		cTup=dc.get_owned_channel_identifiers(userId)
+		assert cTup==[(cKey.id(),channel.name,channel.description)]
+		return cKey.id()
+	def verifyChannelOwner(self, userId,channelId):
+		dc=datastore_channel
+		isOwner=dc.verify_channel_owner(userId,channelId)
+		assert isOwner==True #is the owner of the channel
+		isOwner=dc.verify_channel_owner(100,channelId)
+		assert isOwner==False #not the owner
+		isOwner=dc.verify_channel_owner(userId,100)
+		assert isOwner==False #no such channel
+	def getOwnedChannelData(self,userId,channelId):
+		dc=datastore_channel
+		c=dc.get_owned_channel_data(userId,channelId)
+		assert c is not None
+		assert c.owner==userId
+	def searchChannel(self, cId):
+		dc=datastore_channel
+		cInfo=dc.searchChannel(TEST_CHANNEL)
+		assert (cId, TEST_CHANNEL,TEST_DESCRIPTION) in cInfo
+		cInfo=dc.searchChannel(TEST_CHANNEL.upper())
+		assert (cId, TEST_CHANNEL,TEST_DESCRIPTION) in cInfo
+		cInfo=dc.searchChannel('channel that does not exist')
+		assert cInfo==[]
+	def subscribeChannel(self,userId,cId):
+		dc=datastore_channel
+		da=datastore_account
+		dc.subscribeChannel(userId,cId)
+		assert [(cId,TEST_CHANNEL,TEST_DESCRIPTION)] == dc.getSubscribedChannelIdentifiers(userId)
+		da.addChannelToSubscribed(userId,999) #add nonexistent channel
+		#test that nonexistent channel is not in the list of return tuples
+		assert [(cId,TEST_CHANNEL,TEST_DESCRIPTION)]== dc.getSubscribedChannelIdentifiers(userId)
+	def notifySubscribersForChannel(self,userId,cId):
+		dc=datastore_channel
+		da=datastore_account
+		datastore_account.setOneSignalId(userId,MOCK_ONE_SIGNAL_ID)
+		assert MOCK_ONE_SIGNAL_ID in dc.notifyAllSubscribers(cId)
+		
+	def test_datastore_channel(self):	
+		acc=self.storeNewUser()
+		userId=acc.key.id()
+		cId=self.writeGetChannel(userId)
+		self.verifyChannelOwner(userId, cId)
+		self.getOwnedChannelData(userId,cId)
+		self.searchChannel(cId)
+		self.subscribeChannel(userId,cId)
+		self.notifySubscribersForChannel(userId,cId)
+		
 if __name__ == '__main__':
 	unittest.main()

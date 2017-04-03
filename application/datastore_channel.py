@@ -5,7 +5,8 @@ import datastore_account
 class Channel(ndb.Model):
 	"""Appengine entity for publishing channels"""
 	owner=ndb.IntegerProperty(indexed=True) #id of the Account entity that owns this channel
-	name=ndb.StringProperty(indexed=True) 
+	name=ndb.StringProperty(indexed=False)
+	name_lower = ndb.ComputedProperty(lambda self: self.name.lower(), indexed=True)
 	subscribers=ndb.IntegerProperty(repeated=True) #ids of the Accounts that subscribe to this channel
 	description=ndb.StringProperty(indexed=False)
 	active_loops=ndb.KeyProperty(indexed=False, repeated=True) #Keeps track of currently active loops
@@ -13,14 +14,16 @@ class Channel(ndb.Model):
 	
 def writeChannel(userId, name, description):
 	c=Channel(owner=long(userId),name=name,description=description)
-	id=c.put().id()
+	cKey=c.put()
+	return cKey
 def getChannel(id):
 	c=Channel.get_by_id(id)
-	if datastore_account.isOwnerOfChannel(c):
-		return c
-	return None
+	return c
 def get_owned_channel_identifiers(user_id):
-	"""Returns a list of tuples in the form (channelid,name,description) for all channels owned by the user_id user"""
+	"""
+	Returns a list of tuples in the form 
+	(channelid,name,description) 
+	for all channels owned by the user_id user"""
 	query=Channel.query(Channel.owner==long(user_id))
 	if query.count()>0:
 		c_list=query.fetch(1000)#fetch at most 1000 channels
@@ -44,7 +47,7 @@ def get_owned_channel_data(ownerid,channelid):
 	channel=Channel.get_by_id(long(channelid))
 	return channel
 def searchChannel(channelName):
-	query=Channel.query(Channel.name==channelName)
+	query=Channel.query(Channel.name_lower==channelName.lower())
 	channels=query.fetch(1000)
 	channelInfo=[]
 	for x in channels:
@@ -62,14 +65,16 @@ def getSubscribedChannelIdentifiers(user_id):
 	identifiers=[]
 	for channelId in subChannels:
 		c=Channel.get_by_id(channelId)
-		identifiers.append((channelId, c.name,c.description))
+		if c:
+			identifiers.append((channelId, c.name,c.description))
 	return identifiers
 def notifyAllSubscribers(channelId):
+	"""
+	Takes in a channelId.
+	Returns a list of OneSignalIds on the notification list for testing purposes
+	"""
 	channel=Channel.get_by_id(long(channelId))
-	if(len(channel.subscribers)!=0):
-		datastore_account.notifyAllSubscribers(channel.subscribers)
-	
-		
-
-
-	
+	if channel:
+		if channel.subscribers:
+			return datastore_account.notifyAllSubscribers(channel.subscribers)
+			

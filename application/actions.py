@@ -51,8 +51,6 @@ def actionShowWelcomeScreen():
 	form.payLoad.data=json.dumps(activeLoops)
 	logging.info(activeLoops)
 	return render_template('user_main.html', form=form, loop_list=activeLoops)
-def actionRedirectToSurvey():
-	return redirect(url_for('show_survey'),code=307)
 def actionShowSurvey():
 	form=ShowSurveyForm()
 	return render_template('show_survey.html', form=form)

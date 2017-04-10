@@ -140,7 +140,8 @@ class FeedbackloopTestCase(unittest.TestCase):
 			self.assertEqual(rv2.status_code, 302)
 			assert '<p>You should be redirected automatically to target URL: <a href="/view_owned_channels">/view_owned_channels</a>' in rv2.data
 		loops=datastore_loop.getActiveLoops([(2,self.channelName, self.channelDescription)])
-		assert """[(2, 'Test Channel', 'Test description', 3L, u'[{"message":"M"},[{"question":"Q1","answers":["A1","A2","A3","A4"]},{"question":"Q2","answers":["A1","A2","A3"]}]]')]""" in str(loops)
+		print loops
+		assert """[(2, 'Test Channel', 'Test description', 3L, u'[{"message":"M"},[{"question":"Q1","answers":["A1","A2","A3","A4"]},{"question":"Q2","answers":["A1","A2","A3"]}]]', u'M')]""" in str(loops)
 	
 		
 	def test_show_survey(self):

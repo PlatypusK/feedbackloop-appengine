@@ -1,6 +1,31 @@
 a:hover {
  cursor:pointer;
 }
+.bodyclass{
+	overflow-wrap: break-word;
+	background-image:url("../img/sylwia-bartyzel-112721-mobile.jpg");
+	background-size:cover;
+}
+
+@media (min-width: 500px) {
+    .bodyclass {
+        background-image:url("../img/sylwia-bartyzel-112721.jpg");
+    }
+}
+
+
+.jumbotron{
+	background: rgba(255, 255, 255, 0.70)!important
+}
+.col-md-4{
+	background: rgba(255, 255, 255, 0.7)!important
+}
+.col-md-6{
+	background: rgba(255, 255, 255, 0.7)!important
+}
+.display-3{
+	overflow-wrap: normal;
+}
 .questionbox{
 	resize: none;
 	display: block;

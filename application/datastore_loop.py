@@ -98,7 +98,9 @@ def publish_loop(user_id, channel_id, jsonString):
 		datastore_channel.notifyAllSubscribers(channel_id)
 	return key
 def getActiveLoops(channels):
-	"""Expects a list of tuples of channelId, name, description), returns a list of tuples of (channelId,channelName, channelDescription, activeLoopId, loopItems)"""
+	"""
+	Expects a list of tuples of channelId, name, description), 
+	returns a list of tuples of (channelId,channelName, channelDescription, activeLoopId, loopItems)"""
 	loops=[]
 	for channel in channels:
 		logging.info(channel[0])
@@ -106,9 +108,13 @@ def getActiveLoops(channels):
 		activeLoopsOnChannel=query.fetch(100)
 		logging.info(activeLoopsOnChannel)
 		for loop in activeLoopsOnChannel:
-			loops.append((channel[0],channel[1],channel[2],loop.key.id(),loop.loopItems))
+			loops.append((channel[0],channel[1],channel[2],loop.key.id(),loop.loopItems, LoopItem(loop.loopItems).getMessage()))
 	return loops
-	
+def getMessages(loopItemStrings):
+	messages=[]
+	for loop in loopItemStrings:
+		messages.append(LoopItem(loop).getMessage())
+	return messages
 def storeLoopReply(userId,replyString, replyObject):
 	# logging.info(userId)
 	# logging.info(replyString)

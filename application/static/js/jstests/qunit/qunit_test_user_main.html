@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unit test for user_main.js</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+  <form method="POST" id="flaskForm" action="/user_main">			
+		<input id="action" name="action" type="hidden" value="">
+		<input id="payLoad" name="payLoad" type="hidden" value="[[5966740366295040, &quot;Developer Channel&quot;, &quot;Channel for developers to ask questions&quot;, 5844419697704960, &quot;[{\&quot;message\&quot;:\&quot;\&quot;},[{\&quot;question\&quot;:\&quot;\&quot;,\&quot;answers\&quot;:[]}]]&quot;, &quot;&quot;], [5966740366295040, &quot;Developer Channel&quot;, &quot;Channel for developers to ask questions&quot;, 5281469744283648, &quot;[{\&quot;message\&quot;:\&quot;asdafgadfg\&quot;},[{\&quot;question\&quot;:\&quot;\&quot;,\&quot;answers\&quot;:[]}]]&quot;, &quot;asdafgadfg&quot;]]">
+		<input id="csrf_token" name="csrf_token" type="hidden" value="IjhlN2Q4NWQyMjFlNzU0ODAzMzg3MjVlMzEyZmJmZmYyZWU3ZTI5Y2Yi.C8ehHQ.GdqeDCZrxkWTFa7JHesM7N5qQwA">
+	</form></div>
+  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  	<script src="http://localhost:8800/jstests/qunit/blanket.js"></script>
+  <script src="http://localhost:8800/user_main.js"data-cover-ecmaVersion="6" data-cover></script>
+
+  
+
+  <script>
+
+	console.log($('#flaskForm').get(0))
+	QUnit.test( "Test the function getChosenLoop", function( assert ) {
+		var loop=getChosenLoop(5844419697704960,JSON.parse($('#payLoad').val()))
+		assert.ok(loop.includes(5844419697704960),'We expect that the correct survey has been picked')
+		assert.notOk(loop.includes(5281469744283648),'We expect that the wrong survey is not in the return parameter')
+	});
+
+    QUnit.test( "Test the function selectSurvey", function( assert ) {
+		var didSubmit = false; 
+		$('#flaskForm').submit(function(event) {
+			didSubmit = true;
+			event.preventDefault();
+		}); 
+		var loopIdElement=$('<input>').val(5844419697704960);
+		selectSurvey(loopIdElement.get(0))
+		assert.equal(didSubmit,true,"We expect that the form was submitted");
+		assert.equal($('#flaskForm').attr('action'),'/show_survey','We expect that the form was submitted to /show_survey')
+		assert.ok($('#payLoad').val().includes(5844419697704960),'We expect that the correct survey has been picked and put in the payLoad element')
+		assert.notOk($('#payLoad').val().includes(5281469744283648),'We expect that other surveys that were in the page are not in the submitted payLoad parameter')
+	  
+    });
+  </script>
+</body>
+</html>

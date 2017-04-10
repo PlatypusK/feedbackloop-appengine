@@ -6,7 +6,9 @@ from pbkdf2 import PBKDF2
 
 
 class Account(ndb.Model):
-	"""Appengine entity for user data"""
+	"""
+	Appengine entity for user data
+	"""
 	username = ndb.StringProperty(indexed=False)
 	email = ndb.StringProperty(indexed=False)
 	email_lower = ndb.ComputedProperty(lambda self: self.email.lower(),indexed=True)
@@ -69,8 +71,9 @@ def get_user_verification_data_by_email(email):
 	if user==None:
 		return False
 	if query.count() == 1:
-		return (user.key.id(),user.salt, user.salted_password)
-	return False
+		return(user.key.id(),user.salt,user.salted_password)
+	else:
+		return False
 def get_user_verification_data_by_id(user_id):
 	"""
 	Returns a tuple containing the users id, salted and hashed password and the randomly generated salt 

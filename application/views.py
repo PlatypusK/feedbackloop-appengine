@@ -30,6 +30,8 @@ def hello():
 	
 @app.route('/login', methods=['GET','POST'])
 def login():
+	if 'userId' in session:
+		return redirect(url_for('user_main',code=302))
 	form = LoginForm() if request.method == 'POST' else LoginForm(request.args)
 	if form.validate_on_submit():
 		verification_data=get_user_verification_data_by_email(request.form['email'])
@@ -155,6 +157,9 @@ def view_owned_channels():
 @app.route('/new_channel', methods=['GET','POST'])
 @login_required
 def new_channel():
+	"""
+	View method that serves the page for creating a new channel
+	"""
 	form = NewChannelForm() if request.method == 'POST' else NewChannelForm(request.args)
 	if form.validate_on_submit():
 		logging.info('validated------new_channel-------'+
@@ -165,13 +170,13 @@ def new_channel():
 	logging.info(form.errors.items())
 	return render_template('create_channel.html', form=form)
 
-"""This is the view method for the first screen you see upon login"""
+
 @app.route('/user_main', methods=['GET','POST'])
 @login_required
 def user_main():
-	if request.form.has_key('action'):
-		if request.form['action']==ACTION_SHOW_SURVEY:
-			return actionRedirectToSurvey()
+	"""
+	This is the view method for the first screen you see upon login
+	"""
 	return actionShowWelcomeScreen()
 	
 """This is the view method for showing plots and statistics from loops"""

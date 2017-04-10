@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unit test for show_loop_results.js</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+  <form method="POST" id="flaskForm" action="/show_loop_results">			
+		<input id="action" name="action" type="hidden" value="view loop results">
+		<input id="payLoad" name="payLoad" type="hidden" value="[&quot;[{\&quot;message\&quot;:\&quot;M\&quot;},[{\&quot;question\&quot;:\&quot;Q1\&quot;,\&quot;answers\&quot;:[\&quot;A1A\&quot;,\&quot;A2A\&quot;]},{\&quot;question\&quot;:\&quot;Q2\&quot;,\&quot;answers\&quot;:[\&quot;A1B\&quot;,\&quot;A2B\&quot;]}]]&quot;, [&quot;[[true, false], [false, true]]&quot;]]">
+		<input id="csrf_token" name="csrf_token" type="hidden" value="IjhlN2Q4NWQyMjFlNzU0ODAzMzg3MjVlMzEyZmJmZmYyZWU3ZTI5Y2Yi.C8vLYg.11S5bXYcONG__IpXpg4As2w8qXk">
+	</form>
+  </div>
+  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  	<script src="http://localhost:8800/jstests/qunit/blanket.js"></script>
+		    <script src="http://localhost:8800/d3.min.js"></script>
+	    <script src="http://localhost:8800/d3pie.min.js"></script>
+  <script src="http://localhost:8800/show_loop_results.js" data-cover-ecmaVersion="6" data-cover</script>
+  <script src="http://localhost:8800/feedbackloop-functions.js" data-cover></script>
+
+
+  
+
+  <script>
+	QUnit.test( "Instantiate an instance of the question class and check that it works", function( assert ) {
+		var a=['a1b','a2b','a3b'];
+		var b=['a1','a2','a3','a4']
+		var q1=new Question('q',b);
+		var q2=new Question('q',a);
+		assert.equal( q1.question,'q', 'check that the question parameter is correct')
+		console.log(q1.answers)
+		
+		console.log(b)
+		assert.deepEqual(q1.answers,b, 'Check that we are getting the expected list of answers');
+		assert.deepEqual(q2.answers,a, 'Check that we are getting the expected list of answers');
+		var theseReplies=[[[true,false,false,false],[false,true,false]],[[false,true,false,false],[true,false,false]]]
+		q1.setReplies(theseReplies,0);
+		q2.setReplies(theseReplies,1);
+		assert.deepEqual(q1.replies,[[true,false,false,false],[false,true,false,false]],'We check that the correct replies are in the correct question')
+		
+		assert.deepEqual(q2.replies,[[false,true,false],[true,false,false]],'We check that the correct replies are in the correct question')
+		q1.setCountBool();
+		q2.setCountBool();
+		assert.deepEqual(q1.count,[1,1,0,0],'Check that we have counted checked off answers correctly for the first question')
+		assert.deepEqual(q2.count,[1,1,0],'Check that we have counted checked off answers correctly for the first question')
+
+	});
+	QUnit.test( "Instantiate an instance of the ReplyParams class and check that parameters are correct compared to the payload parameter", function( assert ) {
+		var rp=new ReplyParams();
+		assert.equal(rp.message,'M','Message should be M')
+		assert.deepEqual(rp.questions,['Q1','Q2'], 'Questions should be an array of strings')
+		console.log(rp.answers)
+		assert.deepEqual(rp.answers,[['A1A','A2A'],['A1B','A2B']], 'Answers should be an array of array of strings')
+		assert.deepEqual(rp.replies,[[[true,false],[false,true]]], 'Replies should be an array of arrays of arrays of boolean')
+	});
+	QUnit.test( "Run showPlot and verify that it gets the correct content array", function( assert ) {
+		var a=['a1','a2','a3','a4']
+		var b=['a1b','a2b','a3b'];
+		var q1=new Question('q1',a);
+		var q2=new Question('q2',b);
+		var theseReplies=[[[true,false,false,false],[false,true,false]],[[false,true,false,false],[true,false,false]]]
+		q1.setReplies(theseReplies,0);
+		q2.setReplies(theseReplies,1);
+		q1.setCountBool();
+		q2.setCountBool();
+		var plot1= new showPlot(q1,0);
+		var plot2= new showPlot(q2,1)
+		console.log(plot1.pieData)
+		assert.equal(plot1.pieData[0].label,'a1','verify first content label in plot')
+		assert.equal(plot1.pieData[3].label,'a4', 'verify last content label in plot')
+		assert.equal(plot1.pieData[0].value,1,'verify first content value in plot')
+		assert.equal(plot1.pieData[3].value,0, 'verify last content value in plot')
+	});
+	QUnit.test( "Make the plots and verify that the right questions are created in the correct plots", function( assert ) {
+		var m=new makePlots()
+		console.log(m)
+		assert.equal(m.questions[0].question,'Q1', 'Verify that the first question was checked first and hence in the first plot')
+		assert.equal(m.questions[1].question,'Q2','Verify that the first question was checked second and hence in the second plot')
+	});
+	
+	
+	
+
+
+  </script>
+</body>
+</html>

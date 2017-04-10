@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unit test for show_survey.js</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+  <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3" id="headLine"><!-- Developer Channel --></h1>
+        <p id="messageParagraph"><!-- Message --></p>
+        <p><a class="btn btn-primary btn-lg" name="create_channel" role="button" onclick="submitReply()">Submit reply »</a></p>
+		<div class="toast" id="toast" style="display:none"></div>
+	  </div>
+    </div>
+	<div class="container">
+		<div class="row" id="rowId"></div>
+	</div>
+	<form method="POST" id="flaskForm" action="/show_survey">			
+		<input id="action" name="action" type="hidden" value="Show survey">
+		<input id="payLoad" name="payLoad" type="hidden" value="[5966740366295040,&quot;Developer Channel&quot;,&quot;Channel for developers to ask questions&quot;,6195713662779392,&quot;[{\&quot;message\&quot;:\&quot;Message\&quot;},[{\&quot;question\&quot;:\&quot;Q1\&quot;,\&quot;answers\&quot;:[\&quot;a1\&quot;,\&quot;a2\&quot;]},{\&quot;question\&quot;:\&quot;Q2\&quot;,\&quot;answers\&quot;:[\&quot;a1b\&quot;,\&quot;a2b\&quot;]}]]&quot;,&quot;Message&quot;]">
+		<input id="csrf_token" name="csrf_token" type="hidden" value="IjhlN2Q4NWQyMjFlNzU0ODAzMzg3MjVlMzEyZmJmZmYyZWU3ZTI5Y2Yi.C8kAnQ.2e7ihPFilZHEnbKYTWqqaiCXcbo">
+	</form>
+  </div>
+  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+	<script data-cover-flags="debug" data-cover-ecmaVersion="6" src="http://localhost:8800/jstests/qunit/blanket.min.js" ></script>
+
+  <script src="http://localhost:8800/show_surveys.js"  ></script>
+   <script src="http://localhost:8800/feedbackloop-functions.js" data-cover></script>
+
+  <script>
+	QUnit.test( "Create an instance of SurveyParams from the hidden payload input field and check parameters", function( assert ) {
+		var sp=new SurveyParams();
+		console.log(sp);
+		assert.equal(sp.channelId,5966740366295040, 'We expect the channelId to be 5966740366295040');
+		assert.equal(sp.loopId,6195713662779392, 'We expect the loopId to be 6195713662779392');
+		assert.equal(sp.channelDescription,'Channel for developers to ask questions','We expect the channel description to read Channel for developers to ask questions');
+		assert.equal(sp.channelName,'Developer Channel','We expect the channel name to read Developer Channel');
+		assert.equal(sp.message,'Message', 'We expect the message to be Message');
+		assert.ok(sp.questions.includes('Q1')&&sp.questions.includes('Q2'),'We expect the questions list to include both questions');
+		console.log(sp.answers);
+		assert.ok(sp.answers[0].includes('a1')&&sp.answers[1].includes('a2b'),'We expect the answers list of lists to include first answer of first question and last answer of last question');
+	});
+	QUnit.test( "Extract the jumbotron parameters and insert in html", function( assert ) {
+		$('#messageParagraph').html("");
+		$('#headLine').html("");
+		assert.equal($('#messageParagraph').html(),'', 'Verify that the message field has an empty string');
+		assert.equal($('#headLine').html(),'', 'Verify that the headline field has an empty string');
+		showHeaderItems();
+		assert.equal($('#messageParagraph').html(),'Message', 'verify that the message field has the message in it');
+		assert.equal($('#headLine').html(),'Developer Channel', 'verify that the headline field has the channel name in it');
+	});
+	QUnit.test('Insert the question divs in the html page',function(assert){
+		
+		assert.equal($('#rowId').is(':empty'),true, 'rowId should be empty');
+		showQuestions();
+		assert.equal($('#rowId').is(':empty'),false, 'rowId should not be empty');
+		assert.equal($('#rowId').children().length,2, 'rowId should have two children');
+		assert.ok($('#surveyItemId__0').text().includes('a1') && $('#surveyItemId__0').text().includes('a2') && !$('#surveyItemId__0').text().includes('a2b') &&!$('#surveyItemId__0').text().includes('a1b'), 'Check that we have only the answers that belong to the div here');
+		assert.ok($('#surveyItemId__1').text().includes('a2b') &&$('#surveyItemId__1').text().includes('a1b'), 'Check that we have the answers that belong to the div here');
+		console.log($('#rowId').get(0));
+	});
+	QUnit.test('We expect a div for survey item 0 to have been returned',function(assert){
+		var d=getDivCol(0)
+		console.log(d)
+		assert.equal(d.id,'surveyItemId__0', 'We want the div to have a unique id which follows a pattern')
+	});
+	QUnit.test('We expect the numeric part of the id after a double underscore to be returned ',function(assert){
+		var q=getDivCol(0);
+		assert.equal(extractNumericId(SURVEY_ITEM_ID,q),0, 'We expect 0 to be returned') ;
+		var numId=extractNumericId(ANS_AREA_STRING_ID,$('<div>').attr('id','answerAreaId__45').get(0))
+		assert.equal(numId,45, 'We expect 45 to be returned');
+	});
+	QUnit.test('We want to test that a question div is correctly created',function(assert){
+		var q=getQstArea(135,'Is this the question?');
+		console.log(q)
+		assert.equal(q.id,QST_STRING_ID+'135', 'We assert that it has the id we expect')
+		assert.equal(q.innerHTML,'Is this the question?', 'We assert that it has the correct question')
+	});
+	QUnit.test('We want to test that a div for answers is correctly created',function(assert){
+		var a=getAnswerButtons(3,['a1','a2'])
+		var b=a
+		console.log(a)
+		assert.equal(a.id,'answerAreaId__3', 'We check that the answer div has the assigned numeric id')
+		assert.ok($(a).text().includes('a1')&&$(a).text().includes('a2'),'We check that the div contains the answers we want')
+	});
+	QUnit.test('We want to know if the button is active',function(assert){
+		var lab=$('<label>').addClass('btn btn-primary answerbutton active').get(0)
+		var active=isActive(lab,'btn btn-primary answerbutton active')
+		var lab2=$('<label>').addClass('btn btn-primary answerbutton').get(0)
+		var notActive=isActive(lab2,'btn btn-primary answerbutton active')
+		assert.ok(active, 'We check that the button label registered as active')
+		assert.notOk(notActive,'We check that the inactive button label registered as such')
+	});
+	QUnit.test('We want to know if the button is active',function(assert){
+		var lab=$('<label>').addClass('btn btn-primary answerbutton active').get(0)
+		var active=isActive(lab,'btn btn-primary answerbutton active')
+		var lab2=$('<label>').addClass('btn btn-primary answerbutton').get(0)
+		var notActive=isActive(lab2,'btn btn-primary answerbutton active')
+		assert.ok(active, 'We check that the button label registered as active')
+		assert.notOk(notActive,'We check that the inactive button label registered as such')
+	});
+	QUnit.test('We want to know if the reply is submitted correctly',function(assert){
+		var didSubmit = false; 
+		$('#flaskForm').submit(function(event) {
+			didSubmit = true;
+			event.preventDefault();
+		});
+		showHeaderItems()
+		showQuestions()
+		submitReply()//Attempt to submit reply without clicking anything
+		assert.notOk(didSubmit, 'We check that the reply was not submitted before completion');
+		$('#answerAreaId__0').children(":first").addClass('active')
+		console.log($('#answerAreaId__0').get(0));
+		submitReply()//Attempt to submit reply after activating one radiobutton
+		assert.notOk(didSubmit, 'We check that the reply was not submitted before completion with one button pressed in the first field of radiobuttons');
+		$('#answerAreaId__1').children(":first").addClass('active')
+		console.log($('#answerAreaId__1').get(0));
+		submitReply()//Attempt to submit reply after activating one radiobutton
+		assert.ok(didSubmit, 'We check that the reply was submitted when both fields of radio buttons had an active button');
+
+	});
+  </script>
+</body>
+</html>

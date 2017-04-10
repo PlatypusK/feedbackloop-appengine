@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unit test for subscribed_channels.js</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+  <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3">Channels you subscribe to</h1>
+        <p>Click "View details" to take a closer look at a channel and reply to loops</p>
+		<div class="searchchannel">
+			<textarea id="searchBox" class="searchfield" placeholder="Enter channel name" rows="1"></textarea>
+        <p><a class="searchbutton btn btn-primary btn-lg" onclick="searchChannel()" role="button">Search New Channel»</a></p>
+		</div>
+      </div>
+    </div>
+	<form method="POST" action="/channel_search_results" id="flaskForm">
+		<input id="action" name="action" type="hidden" value="search">
+		<input id="payLoad" name="payLoad" type="hidden" value="developer channel">
+		<input id="csrf_token" name="csrf_token" type="hidden" value="IjhlN2Q4NWQyMjFlNzU0ODAzMzg3MjVlMzEyZmJmZmYyZWU3ZTI5Y2Yi.C8fBHQ.I0Gs9IKxByzL6q2MrHJh143FQzI">
+	</form></div>
+  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  	<script src="http://localhost:8800/jstests/qunit/blanket.js"></script>
+
+  <script src="http://localhost:8800/subscribed_channels.js" data-cover-ecmaVersion="6" data-cover></script>
+
+  <script>
+	QUnit.test( "Test the function searchChannel", function( assert ) {
+		var didSubmit = false; 
+		$('#flaskForm').submit(function(event) {
+			didSubmit = true;
+			event.preventDefault();
+		});
+		var searchWord='Search for this channel'
+		$('#searchBox').val(searchWord)
+		searchChannel()
+		assert.equal(didSubmit,true,"We expect that the form was submitted");
+		assert.equal($('#payLoad').val(),searchWord,'We expect that the searchword is in the payLoad parameter at this point')
+		assert.equal($('#action').val(),ACTION_SEARCH,'We expect for the action word to let the server know that the payload contains a search')
+	});
+
+  </script>
+</body>
+</html>

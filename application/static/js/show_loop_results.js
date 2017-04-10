@@ -1,22 +1,27 @@
 BOOL_TYPE='boolean question';
 	
-function testPlotly(){
-	TESTER = document.getElementById('tester');
-	Plotly.plot( TESTER, [{
-	x: [1, 2, 3, 4, 5],
-	y: [1, 2, 4, 8, 16] }], {
-	margin: { t: 0 } } );
-}
+// function testPlotly(){
+	// TESTER = document.getElementById('tester');
+	// Plotly.plot( TESTER, [{
+	// x: [1, 2, 3, 4, 5],
+	// y: [1, 2, 4, 8, 16] }], {
+	// margin: { t: 0 } } );
+// }
 
 class Question{
 	constructor(question, answers){
 		this.question=question;
 		this.answers=answers;
 	}
-	/**Creates an array with all replies to the specific question*/
+	/**Creates an array with all replies to the *specific question for all users who have replied. allReplies is an array of arrays of boolean arrays. Each item of the outer array is the complete reply of one user. Each item of the secondary array is the users answers to one question. Each item of the inner array indicates whether the user ticked off the answer or not
+	The qIndex parameter indicates which of the questions we want the answer to
+	*/
 	setReplies(allReplies, qIndex){
+		console.log(allReplies)
 		this.replies=[]
 		for(var reply of allReplies){
+			console.log(reply)
+			console.log(reply[qIndex]);
 			this.replies.push(reply[qIndex]);
 		}
 	}
@@ -67,9 +72,6 @@ class ReplyParams{
 	addReplies(rep){
 		this.replies=rep;
 	}
-	getPercentageOfFalseForQuestionNr(qNr){
-		var fillIntheBlank;
-	}
 }
 var t0 = performance.now();
 var params= new ReplyParams();
@@ -83,11 +85,11 @@ class PieSlice{
 }
 /**Expects an instance of the question class and the numericindex of the col-div the plot should go in*/
 function showPlot(qInst, plotIndex){
-	pieData=[]
+	this.pieData=[]
 	for(var i=0;i<qInst.answers.length;i++){
-		pieData.push(new PieSlice(qInst.answers[i],qInst.count[i]));
+		this.pieData.push(new PieSlice(qInst.answers[i],qInst.count[i]));
 	}
-	console.log(pieData);
+	console.log(this.pieData);
 		
 	var pie = new d3pie(plotIndex+"_plotDiv", {
 		"header": {
@@ -103,7 +105,7 @@ function showPlot(qInst, plotIndex){
 			"pieOuterRadius": "88%"
 		},
 		"data": {
-			"content": pieData
+			"content": this.pieData
 		},
 		"labels": {
 			"outer": {
@@ -113,7 +115,8 @@ function showPlot(qInst, plotIndex){
 				"format": "value"
 			},
 			"mainLabel": {
-				"font": "verdana"
+				"font": "verdana",
+				"fontSize": 12
 			},
 			"percentage": {
 				"color": "#e1e1e1",
@@ -122,7 +125,7 @@ function showPlot(qInst, plotIndex){
 			},
 			"value": {
 				"color": "#e1e1e1",
-				"font": "verdana"
+				"font": "verdana",				
 			},
 			"lines": {
 				"enabled": true,
@@ -142,11 +145,14 @@ function showPlot(qInst, plotIndex){
 	});
 }
 function makePlots(){
+	this.questions=[]
 	for(var i=0;i<params.questions.length;i++){
+		console.log(params)
 		question=new Question(params.questions[i], params.answers[i])
 		question.setReplies(params.replies,i);
 		question.setCountBool();
-		console.log(question);
+		console.log(this.question);
+		this.questions.push(question)
 		showPlot(question,i);
 	}
 }

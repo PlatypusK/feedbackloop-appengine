@@ -9,8 +9,7 @@ class Channel(ndb.Model):
 	name_lower = ndb.ComputedProperty(lambda self: self.name.lower(), indexed=True)
 	subscribers=ndb.IntegerProperty(repeated=True) #ids of the Accounts that subscribe to this channel
 	description=ndb.StringProperty(indexed=False)
-	active_loops=ndb.KeyProperty(indexed=False, repeated=True) #Keeps track of currently active loops
-	old_loops=ndb.KeyProperty(indexed=False, repeated=True)
+
 	
 def writeChannel(userId, name, description):
 	c=Channel(owner=long(userId),name=name,description=description)

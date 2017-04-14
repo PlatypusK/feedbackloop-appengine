@@ -39,14 +39,14 @@ a:hover {
 
 	/* display: block; */
 	/* float: left; */
-	width: calc(25% - 20px);
+	width: 350px;
 	margin-bottom:-5px;
 }
 .addquestionbutton{
 
 	/* display: block; */
 	/* float: left; */
-	width: calc(25% - 20px);
+	width: 350px;
 	margin-bottom:10px;
 }
 .addanswerbutton{

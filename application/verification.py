@@ -61,7 +61,7 @@ def verify_user():
 	"""
 	Checks that the userId and password saved in Flasks
 	secure session cookie matches. The userId and password should
-	be saved in the cookie on login. 
+	be saved in the cookie on login. This can easily be changed to saving a token that expires instead if that is desirable.
 	"""
 	logging.info(session.get('email'))
 	logging.info(session.get('password'))

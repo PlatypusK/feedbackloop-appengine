@@ -4,28 +4,41 @@
   <meta charset="utf-8">
   <title>Composite unit test for java scripts</title>
   <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
-  <link rel="stylesheet" href="qunit-composite.css">
+  <link rel="stylesheet" href="http://localhost:8800/jstests/qunit/lib/qunit-composite.css">
 
 </head>
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
   <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
-  <script src="http://localhost:8800/jstests/qunit/qunit-composite.js"></script>
+  <script src="http://localhost:8800/jstests/qunit/lib/qunit-composite.js"></script>
   	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-	<script src="http://localhost:8800/jstests/qunit/blanket.js"></script>
-	
 	  
 
 
 
   <script>
+	var coverageList=[]
 	QUnit.testSuites([
-		"http://localhost:8800/jstests/qunit/qunit_test_user_main.html",
-		"http://localhost:8800/jstests/qunit/qunit_test_subscribed_channels.html",
-		"http://localhost:8800/jstests/qunit/qunit_test_show_survey.html"
-		<!-- { name: "Example Test 3", path: "example-test-3.html" } -->
+		"http://localhost:8800/jstests/qunit/qunit_test_user_main.html?coverage",
+		"http://localhost:8800/jstests/qunit/qunit_test_subscribed_channels.html?coverage",
+		"http://localhost:8800/jstests/qunit/qunit_test_show_survey.html?coverage",
+		"http://localhost:8800/jstests/qunit/qunit_test_show_loop_results.html?coverage",
+		"http://localhost:8800/jstests/qunit/qunit_test_show_create_loop.html?coverage"
 	]);
+	QUnit.on('suiteEnd', function(data) {
+		console.log(coverageList)
+		alert(coverageList)
+		hitSum=0;
+		slocSum=0;
+		for(var x=0;x<coverageList.length;x++){
+			hitSum+=coverageList[x][1];
+			slocSum+=coverageList[x][2];
+		}
+		var totalCoverage=hitSum/slocSum*100
+		alert('Total coverage was: ' +totalCoverage+'%')
+	});
+	
   </script>
 </body>
 </html>

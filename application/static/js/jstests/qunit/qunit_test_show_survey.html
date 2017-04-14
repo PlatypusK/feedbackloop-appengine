@@ -28,10 +28,10 @@
   <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
   	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 
-	<script data-cover-flags="debug" data-cover-ecmaVersion="6" src="http://localhost:8800/jstests/qunit/blanket.min.js" ></script>
+	<script data-cover-reporter="http://localhost:8800/jstests/qunit/simple-qunit-composite-reporter.js" src="http://localhost:8800/jstests/qunit/lib/blanket.min.js" ></script>
 
-  <script src="http://localhost:8800/show_surveys.js"  ></script>
-   <script src="http://localhost:8800/feedbackloop-functions.js" data-cover></script>
+  <script src="http://localhost:8800/show_surveys.js" data-cover ></script>
+   <script src="http://localhost:8800/feedbackloop-functions.js"></script>
 
   <script>
 	QUnit.test( "Create an instance of SurveyParams from the hidden payload input field and check parameters", function( assert ) {

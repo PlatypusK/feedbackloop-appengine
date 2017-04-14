@@ -15,6 +15,7 @@ handlers:
     Service-Worker-Allowed: /
 - url: /.*
   script: main.app
+  secure: always
 libraries:
 - name: ssl
   version: latest

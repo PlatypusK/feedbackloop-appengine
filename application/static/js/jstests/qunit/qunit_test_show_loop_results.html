@@ -16,11 +16,13 @@
   </div>
   <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
   	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-  	<script src="http://localhost:8800/jstests/qunit/blanket.js"></script>
-		    <script src="http://localhost:8800/d3.min.js"></script>
-	    <script src="http://localhost:8800/d3pie.min.js"></script>
-  <script src="http://localhost:8800/show_loop_results.js" data-cover-ecmaVersion="6" data-cover</script>
-  <script src="http://localhost:8800/feedbackloop-functions.js" data-cover></script>
+  	<script data-cover-reporter="http://localhost:8800/jstests/qunit/simple-qunit-composite-reporter.js"  src="http://localhost:8800/jstests/qunit/lib/blanket.js" ></script>
+
+		    <script src="http://localhost:8800/lib/d3.min.js"></script>
+	    <script src="http://localhost:8800/lib/d3pie.min.js"></script>
+  <script src="http://localhost:8800/show_loop_results.js"  data-cover></script>
+
+  <script src="http://localhost:8800/feedbackloop-functions.js"></script>
 
 
   

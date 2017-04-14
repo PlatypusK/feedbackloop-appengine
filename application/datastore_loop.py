@@ -13,7 +13,7 @@ class Loop(ndb.Model):
 	"""Appengine entity definition for surveys"""
 	onChannel=ndb.IntegerProperty(indexed=True)
 	loopItems=ndb.StringProperty(indexed=False)#1 json string on the form (generalized for more qustions and answers [{"question":"Question 1","answers":["Answer 1a","Answer 1b"]},{"question":"Question 2","answers":["Answer 2a","Answer 2b","Answer 2c"]}]
-	replies=ndb.StringProperty(indexed=False, repeated=True)#1 json string per reply
+	# replies=ndb.StringProperty(indexed=False, repeated=True)#1 json string per reply
 	createdDate=ndb.DateTimeProperty(indexed=True, auto_now_add=True)#When was the loop created
 	expiresOn=ndb.DateTimeProperty(indexed=True)#What is the deadline for answering
 

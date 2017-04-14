@@ -8,8 +8,7 @@ var SURVEY_ITEM_ID="surveyItemId__";
 /**
 *Class that reconstructs the payload parameter into a construct that *is easy to call when displaying *the survey to the *subscriber
 */
-class SurveyParams{
-	constructor(){
+function SurveyParams(){
 		var parsedPay=JSON.parse($("#payLoad").val());
 		this.channelId=parsedPay[0];
 		this.channelName=parsedPay[1];
@@ -24,11 +23,10 @@ class SurveyParams{
 			this.questions.push(questAndAns[i].question);
 			this.answers.push(questAndAns[i].answers);
 		}
-	}
 /**
 *Adds the users replies to the class instance
 */
-	addReplies(rep){
+	this.addReplies=function(rep){
 		this.replies=rep;
 	}
 }
@@ -123,16 +121,17 @@ function isActive(element, cls) {
 function submitReply(){
 	var params=new SurveyParams();
 	var isChecked=[];
+	var hasAnswered=false;
 	for(var i=0;i<params.answers.length;i++){
 		var ans = $('#'+ANS_AREA_STRING_ID+i).get(0);
 		var labChildren=ans.childNodes;
 		console.log(ans);
 		console.log(labChildren);
 		var isChecked2=[];
-		var hasAnswered=false;
-		for(var labChild of labChildren){
+		for(var j=0;j<labChildren.length;j++){
 		// for(var labChild of labChildren){
-			if(isActive(labChild,"btn btn-primary answerbutton active")){
+			console.log(labChildren[j])
+			if(isActive(labChildren[j],"btn btn-primary answerbutton active")){
 				isChecked2.push(true);
 				hasAnswered=true;
 			}
@@ -144,6 +143,7 @@ function submitReply(){
 			toast("#toast", "Please respond to all the questions before pressing submit");
 			return;
 		}
+		hasAnswered=false
 		isChecked.push(isChecked2);
 	}
 	params.addReplies(isChecked);

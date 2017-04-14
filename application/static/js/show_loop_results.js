@@ -8,68 +8,67 @@ BOOL_TYPE='boolean question';
 	// margin: { t: 0 } } );
 // }
 
-class Question{
-	constructor(question, answers){
-		this.question=question;
-		this.answers=answers;
-	}
+function Question(question,answers){
+
+	this.question=question;
+	this.answers=answers;
 	/**Creates an array with all replies to the *specific question for all users who have replied. allReplies is an array of arrays of boolean arrays. Each item of the outer array is the complete reply of one user. Each item of the secondary array is the users answers to one question. Each item of the inner array indicates whether the user ticked off the answer or not
 	The qIndex parameter indicates which of the questions we want the answer to
 	*/
-	setReplies(allReplies, qIndex){
+	this.setReplies=function(allReplies, qIndex){
 		console.log(allReplies)
 		this.replies=[]
-		for(var reply of allReplies){
-			console.log(reply)
-			console.log(reply[qIndex]);
-			this.replies.push(reply[qIndex]);
+		for(var x=0;x<allReplies.length;x++){
+			console.log(allReplies[x])
+			console.log(allReplies[x][qIndex]);
+			this.replies.push(allReplies[x][qIndex]);
 		}
 	}
 	/**Count how often each alternative was answered with true*/
-	setCountBool(){
+	this.setCountBool=function(){
 		this.count=new Array(this.answers.length).fill(0);
-		for(var reply of this.replies){
-			for(var i=0; i<reply.length;i++){
-				if(reply[i]==true){
+		for(var y=0;y<this.replies.length;y++){
+			for(var i=0; i<this.replies[y].length;i++){
+				if(this.replies[y][i]==true){
 					this.count[i]++;
 				}
 			}
 		}
 	}
 }
-class ReplyParams{
-	constructor(){
-		var payLoad=$('#payLoad').get(0)
-		console.log(payLoad)
-		if(payLoad.value=="no data"){
-			toast($('#toast'),'It looks like there are no replies so far')
-			return;
-		}
-		console.log($("#payLoad").val())
-		var parsedPay=JSON.parse($("#payLoad").val());
-		console.log(parsedPay);
-		var surveys=JSON.parse(parsedPay[0])
-		var replyStringList=parsedPay[1]
-		this.message=surveys[0].message
-		this.questions=[];
-		this.answers=[];
-		this.replies=[];
-		for(var survey of surveys[1]){
-			this.questions.push(survey.question);
-			this.answers.push(survey.answers);
-		}
-		for(var repString of replyStringList){
-			this.replies.push(JSON.parse(repString));
-		}
-		console.log(this.message);
-		console.log(this.questions);
-		console.log(this.answers);
-		console.log(this.replies);
-		if(this.replies.length==0){
-			toast('#toast', "Looks like nobody replied yet");
-		}
+function ReplyParams(){
+
+	var payLoad=$('#payLoad').get(0)
+	console.log(payLoad)
+	if(payLoad.value=="no data"){
+		toast($('#toast'),'It looks like there are no replies so far')
+		return;
 	}
-	addReplies(rep){
+	console.log($("#payLoad").val())
+	var parsedPay=JSON.parse($("#payLoad").val());
+	console.log(parsedPay);
+	var surveys=JSON.parse(parsedPay[0])
+	var replyStringList=parsedPay[1]
+	this.message=surveys[0].message
+	this.questions=[];
+	this.answers=[];
+	this.replies=[];
+	for(var x=0;x<surveys[1].length;x++){
+		this.questions.push(surveys[1][x].question);
+		this.answers.push(surveys[1][x].answers);
+	}
+	for(var x=0;x<replyStringList.length;x++){
+		this.replies.push(JSON.parse(replyStringList[x]));
+	}
+	console.log(this.message);
+	console.log(this.questions);
+	console.log(this.answers);
+	console.log(this.replies);
+	if(this.replies.length==0){
+		toast('#toast', "Looks like nobody replied yet");
+
+	}
+	this.addReplies=function(rep){
 		this.replies=rep;
 	}
 }
@@ -77,11 +76,9 @@ var t0 = performance.now();
 var params= new ReplyParams();
 var t1 = performance.now();
 console.log("params instance created in " + (t1 - t0) + " milliseconds.")
-class PieSlice{
-	constructor(answer, count){
-		this.label=answer;
-		this.value=count;
-	}
+function PieSlice(answer,count){
+	this.label=answer;
+	this.value=count;
 }
 /**Expects an instance of the question class and the numericindex of the col-div the plot should go in*/
 function showPlot(qInst, plotIndex){

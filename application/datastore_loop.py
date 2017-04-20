@@ -42,7 +42,7 @@ class ReplyShard(ndb.Model):
 		replies=[]
 		logging.info(self.nrShards)
 		i=1
-		while i<self.nrShards:
+		while i<=self.nrShards:
 			shard=ReplyShard.get_by_id(stringLoop+"_"+str(i))
 			if shard is not None:
 				replies.extend(shard.replies)
@@ -110,11 +110,14 @@ def getActiveLoops(channels):
 		for loop in activeLoopsOnChannel:
 			loops.append((channel[0],channel[1],channel[2],loop.key.id(),loop.loopItems, LoopItem(loop.loopItems).getMessage()))
 	return loops
-def getMessages(loopItemStrings):
-	messages=[]
-	for loop in loopItemStrings:
-		messages.append(LoopItem(loop).getMessage())
-	return messages
+# def getMessages(loopItemStrings):
+	# """
+	# Gets the message part from a list of LoopItem jsonStrings
+	# """
+	# messages=[]
+	# for loop in loopItemStrings:
+		# messages.append(LoopItem(loop).getMessage())
+	# return messages
 def storeLoopReply(userId,replyString, replyObject):
 	# logging.info(userId)
 	# logging.info(replyString)
@@ -130,7 +133,7 @@ def storeLoopReply(userId,replyString, replyObject):
 		datastore_account.setAnsweredLoop(userId,loopId)
 		return True
 	return False
-def getRecentExpiredLoops(fromDaysBack=7, channelId="0"):
+def getRecentLoops(fromDaysBack=7, channelId="0"):
 	recentLoops=Loop.query(Loop.onChannel==long(channelId), Loop.expiresOn>(datetime.now()-timedelta(days=fromDaysBack))).fetch(1000)
 	logging.info("Answers:")
 	return [(loop.key.id(),loop.expiresOn.date(), LoopItem(loop.loopItems).getMessage()) for loop in recentLoops];

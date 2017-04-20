@@ -5,7 +5,7 @@ var ANS_AREA_STRING_ID="answersArea_";
 var ACTION_PUBLISH="publish";
 
 function extractNumericAnsId(ans_id){
-	return ans_id.substring(10);
+	return ans_id.substring(ans_id.indexOf("_")+1);
 }
 function addAnswer(clicked_id){
 	var numId=extractNumericAnsId(clicked_id);
@@ -17,20 +17,19 @@ function addAnswer(clicked_id){
 	input.maxLength = "5000";
 	input.cols = "40";
 	input.rows = "1";
-	input.id="question_"+numId;
 	div.appendChild(input); //appendChild
 }
-/**This returns a new id that will be the last numerical id of the child divs of the supplied div*/
+/**This returns a new id that will be the last numerical id of the child divs of the supplied div if made into a new item*/
 function getNumIdColLast(div){
-	var CHARS_BEFORE_NUM_ID=11;
-	return (parseInt(div.lastElementChild.id.substring(CHARS_BEFORE_NUM_ID))+1);
+	return (parseInt(extractNumericId(SUR_STRING_ID,div.lastElementChild))+1);
 }
-/**This returns the numerical postfix of the id of the survey item in question*/
-function getNumIdCol(divCol){
-	var CHARS_BEFORE_NUM_ID=11;
-	return (parseInt(divCol.id.substring(CHARS_BEFORE_NUM_ID)));
+/**
+*Extracts the numeric id of the page element based on the position of the escape characters "__"
+*/
+function extractNumericId(idString, pageElement){
+	return pageElement.id.substring(idString.indexOf("_")+1);
 }
-/**This returns a div that contains questions, answers and buttons for one item in the survey
+/**This returns a div that contains questions, answers and buttons for one item in the surveya
  *@param{string} numId - all divcol elements and its children get a specific numeric postfix to uniquely identify them in the document. 
  */
 function getDivCol(numId){
@@ -86,60 +85,60 @@ function publish(){
 	var loopObj=new Loop();
 	var response=loopObj.toJson();
 	console.log(loopObj.toJson());
-	flaskForm=document.getElementById("flaskForm");
-	jStringField=document.getElementById("jsonString");
-	jStringField.value=response;
-	action=document.getElementById("action");
-	console.log(action);
-	action.value=ACTION_PUBLISH;
-	console.log(flaskForm);
-	flaskForm.submit();
+	// flaskForm=document.getElementById("flaskForm");
+	// jStringField=document.getElementById("jsonString");
+	// jStringField.value=response;
+	$('#jsonString').val(response);
+	$('#action').val(ACTION_PUBLISH)
+	// action=document.getElementById("action");
+	// console.log(action);
+	// action.value=ACTION_PUBLISH;
+	// console.log(flaskForm);
+	// flaskForm.submit();
+	$('#flaskForm').submit();
 }
-class Loop{
-	constructor(){
-		this.messageBox=document.getElementById('messageBox')
-		this.message=messageBox.value;
-		var rowDiv=document.getElementById("rowId");
-		var loopElementsCollection=rowDiv.children;
-		var arr=Array.prototype.slice.call( loopElementsCollection );
-		console.log(arr);
-		this.loops=[];
-		for (var i = 0; i < arr.length; i++) {
-			console.log(arr[i]);
-			var numId=getNumIdCol(arr[i]);
-			this.loops.push(new LoopItem(numId));
-		}
+function Loop(){
+	this.message=$('#messageBox').val()
+	var rowDiv=document.getElementById("rowId");
+	var loopElementsCollection=rowDiv.children;
+	var arr=Array.prototype.slice.call( loopElementsCollection );
+	console.log(arr);
+	this.loops=[];
+	for (var i = 0; i < arr.length; i++) {
+		console.log(arr[i]);
+		var numId=extractNumericId(SUR_STRING_ID,arr[i]);
+		this.loops.push(new LoopItem(numId));
 	}
-	toJson(){
+
+	this.toJson=function(){
 		return JSON.stringify([new MessageItem(this.message),this.loops])
 	}
 }
-class MessageItem{
-	constructor(messageValue){
-		this.message=messageValue;
-	}
+function MessageItem(messageValue){
+	this.message=messageValue;
 }
-class LoopItem{
-	constructor(numId){
-		this.question=LoopItem.getQuestion(numId)
-		this.answers=LoopItem.getAnswers(numId)
+function LoopItem(numId){
+	this.question=getQuestion(numId)
+	this.answers=getAnswers(numId)
+
+}
+function getQuestion(numId){
+	console.log(numId);
+	console.log(QST_STRING_ID+numId);
+	return document.getElementById(QST_STRING_ID+numId).value;
+}
+function getAnswers(numId){
+	var ansDiv=document.getElementById(ANS_AREA_STRING_ID+numId);
+	console.log(ansDiv);
+	var answerFieldsCollection=ansDiv.children;//get all answers for loopitem
+	var arr = Array.prototype.slice.call( answerFieldsCollection );//convert to array
+	var answers=[];
+	for (var i = 0; i < arr.length; i++) {
+		answers.push(arr[i].value);
 	}
-	static getQuestion(numId){
-		console.log(numId);
-		console.log(QST_STRING_ID+numId);
-		return document.getElementById(QST_STRING_ID+numId).value;
-	}
-	static getAnswers(numId){
-		var ansDiv=document.getElementById(ANS_AREA_STRING_ID+numId);
-		console.log(ansDiv);
-		var answerFieldsCollection=ansDiv.children;//get all answers for loopitem
-		var arr = Array.prototype.slice.call( answerFieldsCollection );//convert to array
-		var answers=[];
-		for (var i = 0; i < arr.length; i++) {
-			answers.push(arr[i].value);
-		}
-		return answers
-	}
+	return answers
+}	
+
 	
-}
+
 

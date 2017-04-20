@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unit test for user_main.js</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
+  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+  	<script data-cover-reporter="http://localhost:8800/jstests/qunit/simple-qunit-composite-reporter.js" src="http://localhost:8800/jstests/qunit/lib/blanket.js"></script>
+  <script src="http://localhost:8800/channel_search_results.js" data-cover></script>
+
+	<script src="http://localhost:8800/onesignal_app_setup.js" data-cover></script>
+	<script src="http://localhost:8800/push_subscription.js" data-cover></script>
+
+	
+
+  <script>
+  	QUnit.test( "Dummy test for composite", function( assert ) {
+		assert.ok(true)
+	});
+  </script>
+</body>
+</html>

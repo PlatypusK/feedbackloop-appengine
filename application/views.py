@@ -129,7 +129,7 @@ def owned_channel():
 			return actionRedirectToLoopResults();
 	form=OwnedChannelForm()
 	channelId=request.form['channelid']
-	loopList=datastore_loop.getRecentExpiredLoops(7, channelId)
+	loopList=datastore_loop.getRecentLoops(7, channelId)
 	logging.debug(loopList)
 	form.channel_id_for_new_loop.data=channelId
 	channel=get_owned_channel_data(session.get('userId'),channelId);

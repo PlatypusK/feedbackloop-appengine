@@ -4,6 +4,9 @@ import tempfile
 import flask
 import sys
 import logging
+import json
+from datetime import timedelta
+from time import sleep
 from application import datastore_loop
 from application import datastore_account
 from application import datastore_channel
@@ -255,7 +258,6 @@ class FeedbackloopTestCase(unittest.TestCase):
 		rv2=self.client.get(view_url) #test that we can access a protected view 
 		self.assertEqual(rv2.status_code,200)
 		assert '<h1 class="display-3">Welcome</h1>' in rv2.data
-		assert '<p>See below for active loops</p>' in rv2.data
 		assert 'Create new Channel' in rv2.data
 		self.logout()
 		rv2=self.client.get(view_url) #test that we can not access a protected view 
@@ -267,7 +269,6 @@ class FeedbackloopTestCase(unittest.TestCase):
 		rv2=self.client.get('/user_main')
 		self.assertEqual(rv2.status_code,200)
 		assert '<h1 class="display-3">Welcome</h1>' in rv2.data
-		assert '<p>See below for active loops</p>' in rv2.data
 		assert 'Create new Channel' in rv2.data
 	def test_save_one_signal(self):
 		view_url='/save_one_signal'
@@ -400,6 +401,79 @@ class FeedbackloopTestCase(unittest.TestCase):
 		self.searchChannel(cId)
 		self.subscribeChannel(userId,cId)
 		self.notifySubscribersForChannel(userId,cId)
+	def writeGetLoop(self,uid,cid):
+		dl=datastore_loop
+		jsonString="""[{"message":"M"},[{"question":"Q1","answers":["A1A","A2A","A3A"]},{"question":"Q2","answers":["A1B","A2B","A3B"]}]]"""
+		lKey=dl.publish_loop(uid,cid,jsonString)
+		lKeyBadUid=dl.publish_loop(66,cid,jsonString)
+		assert not lKeyBadUid
+		assert lKey
+		assert dl.Loop.get_by_id(lKey.id())
+		assert dl.ReplyShard.get_by_id(str(lKey.id())+'_0')
+		return lKey.id()
+	def verifyActiveLoops(self,cid):
+		dl=datastore_loop
+		l=[(cid,TEST_CHANNEL,TEST_DESCRIPTION)]
+		l2=dl.getActiveLoops(l)
+		assert l2==[(3L, 'Test channel', 'test description', 4L, u'[{"message":"M"},[{"question":"Q1","answers":["A1A","A2A","A3A"]},{"question":"Q2","answers":["A1B","A2B","A3B"]}]]', u'M')]
+		
+	def verifyStoreGetReply(self,uid):
+		dl=datastore_loop
+		da=datastore_account
+		replyString='[[false, false, true], [true, false,false]]'
+		replyObject={'loopId':4,'replies':'[[false, false, true], [true, false,false]]'}
+		stored=dl.storeLoopReply(uid,replyString,replyObject)
+		assert stored
+		assert 4 in da.Account.get_by_id(uid).answeredLoops
+		results=dl.getResultJson(4)
+		assert "[{\"message\":\"M\"},[{\"question\":\"Q1\",\"answers\":[\"A1A\",\"A2A\",\"A3A\"]},{\"question\":\"Q2\",\"answers\":[\"A1B\",\"A2B\",\"A3B\"]}]]", ["\"[[false, false, true], [true, false,false]]\""] in results
+	def verifyCountQuestions(self,lid):
+		dl=datastore_loop
+		nr=dl.countQuestions(lid)
+		assert nr==2
+	def verifyRecentLoops(self,cid,lid):
+		dl=datastore_loop
+		survey=dl.Loop.get_by_id(lid)
+		recent=dl.getRecentLoops(channelId=cid)
+		assert recent
+		assert recent[0][0]==survey.key.id()
+	def verifyLoopItem(self,lid):
+		dl=datastore_loop
+		survey=dl.Loop.get_by_id(lid)
+		
+		li=dl.LoopItem(survey.loopItems)
+		m=li.getMessage()
+		assert m=='M'
+		items=li.getItems()
+		assert {u'question': u'Q1', u'answers': [u'A1A', u'A2A', u'A3A']}, {u'question': u'Q2', u'answers': [u'A1B', u'A2B', u'A3B']} in items
+	def verifyReplyShard(self):
+		"""
+		Tests only public methods, not class private methods
+		As is common for unittesting. The private methods will be tested indirectly as they are used by the tested functions.
+		"""
+		dl=datastore_loop
+		dl.ReplyShard.initShard(99,20)
+		initShard=dl.ReplyShard.get_by_id(str(99)+'_'+str(0))
+		assert initShard
+		for x in range(0,50):
+			dl.ReplyShard.putReply(99,'replyString')
+		allReplies=dl.ReplyShard.getAllReplies(99)
+		assert 'replyString' in allReplies
+		assert len(allReplies)==50
+	
+	def test_datastore_loop(self):
+		acc=self.storeNewUser()
+		uid=acc.key.id()
+		cId=self.writeGetChannel(uid)
+		lId=self.writeGetLoop(uid,cId)
+		self.verifyActiveLoops(cId)
+		self.verifyStoreGetReply(uid)
+		self.verifyCountQuestions(lId)
+		self.verifyRecentLoops(cId,lId)
+		self.verifyLoopItem(lId)
+		self.verifyReplyShard()
+		
+		
 		
 if __name__ == '__main__':
 	unittest.main()

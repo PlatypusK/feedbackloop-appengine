@@ -2,29 +2,140 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Unit test for user_main.js</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.3.0.css">
+  <title>Unit test for create_loop.js</title>
+  <link rel="stylesheet" href="http://localhost:8800/jstests/qunit/lib/qunit-2.3.0.css">
 </head>
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture">
-  <form method="POST" id="flaskForm" action="/user_main">			
-		<input id="action" name="action" type="hidden" value="">
-		<input id="payLoad" name="payLoad" type="hidden" value="[[5966740366295040, &quot;Developer Channel&quot;, &quot;Channel for developers to ask questions&quot;, 5844419697704960, &quot;[{\&quot;message\&quot;:\&quot;\&quot;},[{\&quot;question\&quot;:\&quot;\&quot;,\&quot;answers\&quot;:[]}]]&quot;, &quot;&quot;], [5966740366295040, &quot;Developer Channel&quot;, &quot;Channel for developers to ask questions&quot;, 5281469744283648, &quot;[{\&quot;message\&quot;:\&quot;asdafgadfg\&quot;},[{\&quot;question\&quot;:\&quot;\&quot;,\&quot;answers\&quot;:[]}]]&quot;, &quot;asdafgadfg&quot;]]">
-		<input id="csrf_token" name="csrf_token" type="hidden" value="IjhlN2Q4NWQyMjFlNzU0ODAzMzg3MjVlMzEyZmJmZmYyZWU3ZTI5Y2Yi.C8ehHQ.GdqeDCZrxkWTFa7JHesM7N5qQwA">
-	</form></div>
-  <script src="https://code.jquery.com/qunit/qunit-2.3.0.js"></script>
-  	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <div class="jumbotron">
+      <div class="container">
+        <h1 class="display-3">Input your questions</h1>
+        <p>Add answers or new questions by using the buttons</p>
+        <p><a class="publishbutton btn btn-primary btn-lg" value="name=&quot;channel_id&quot;" onclick="publish()" role="button">Publish to all subscribers »</a></p>
+		
+		<button id="addQuestion" class="addquestionbutton btn btn-secondary" onclick="addQuestion()"> Add Question » </button>
+		<textarea id="messageBox" class="messagefield" placeholder="If you have a message to go with your questions, you can put it here" ></textarea>
 
-  	<script   src="http://localhost:8800/jstests/qunit/lib/blanket.js"></script>
+		</div>
+      </div>
+    
+	<div class="container">
+
+	<div class="row" id="rowId">
+		<div class="col-md-4 surveyinput" id="surveyItem_0">
+			<textarea id="question_0" class="questionbox" placeholder="Enter a question here" rows="3"></textarea>
+			<div id="answersArea_0"></div>
+			<button id="addAnswer_0" class="addanswerbutton btn btn-secondary" onclick="addAnswer(this.id)">⇓ Add Answer ⇓</button>
+		</div>		
+	</div>
+	</div>
+<form method="POST" id="flaskForm" action="/create_loop">			
+			<input id="action" name="action" type="hidden" value="create_loop">
+	<input id="payLoad" name="payLoad" type="hidden" value="">
+	<input id="channel_id" name="channel_id" type="hidden" value="5890100969865216">
+	<input id="csrf_token" name="csrf_token" type="hidden" value="ImQ4NTc0Nzk3YTBjMjQxMmEyMDFlNWVmNDUwMzlhNTJiNzcwMTdiZTki.C9IJNQ.-NQdo1-s7VuddOj5J8PWWrXTdSE">
+	<input id="jsonString" type="hidden" name="jsonString">
+</form>
+	
+  
+
+  </div>
+  <script src="http://localhost:8800/jstests/qunit/lib/qunit-2.3.0.js"></script>
+  	<script src="http://localhost:8800/jstests/qunit/lib/jquery-3.1.1.min.js" ></script>
+
+  	<script  data-cover-reporter="http://localhost:8800/jstests/qunit/simple-qunit-composite-reporter.js"   src="http://localhost:8800/jstests/qunit/lib/blanket.js"></script>
   <script src="http://localhost:8800/create_loop.js" data-cover></script>
 
   
 
   <script>
-	QUnit.test( "Test the function getChosenLoop", function( assert ) {
-		assert.ok(1+1==2);
+	QUnit.test( "Verify that the numberic id extracted by extractNumericAnsId is correct", function( assert ) {
+		var numId=extractNumericAnsId(ANS_STRING_ID+1)
+		assert.equal(numId,1)
 	});
+	QUnit.test( "Verify that the addAnswer function creates a new answer field in the correct div", function( assert ) {
+		assert.equal($('.answerbox').get(0),null, 'Check that there are no answerfields')
+		addAnswer('addAnswer_0');
+		var testAns=$('.answerbox')
+		assert.notEqual(testAns.get(0),null, 'Check that there is an answerfield after adding one')
+		assert.equal(testAns.attr('placeholder'),'Enter an answer option', 'Check that the placeholder has been set');
+		assert.equal(testAns.length,1, 'Check that only one element has been created')
+		assert.equal(testAns.parent().attr('id'),'answersArea_0','Verify that the answer field has been created in the correct div')
+	});
+	QUnit.test( "Verify that the numeric id extracted by getNumIdColLast is correct", function( assert ) {
+		var numId=getNumIdColLast($('#rowId').get(0));
+		assert.equal(numId,1,'Check that we are getting the id for the last current surveyitem +1')
+		addQuestion();
+		numId=getNumIdColLast($('#rowId').get(0));
+		assert.equal(numId,2,'Check that we are getting the id for the last current surveyitem +1 after adding an extra question')
+	});
+	QUnit.test('We expect the numeric part of the id after a single underscore to be returned assuming we supply the right string part of the id',function(assert){
+		var q=getDivCol(0);
+		assert.equal(extractNumericId(SUR_STRING_ID,q),0, 'We expect 0 to be returned') ;
+		var numId=extractNumericId(ANS_AREA_STRING_ID,$('<div>').attr('id','answersArea_45').get(0))
+		assert.equal(numId,45, 'We expect 45 to be returned');
+	});
+	QUnit.test('We expect a new column to be created of the class col-md-4 surveyinput and with the supplied numeric id along with the correct string part',function(assert){
+		var divCol=getDivCol(3);
+		assert.equal(divCol.id,SUR_STRING_ID+3, 'check that id is ' + SUR_STRING_ID+3)
+		assert.equal(divCol.className,'col-md-4 surveyinput', 'Check that class is col-md-4 surveyinput' )
+	});	
+	QUnit.test('Check that a new answer button is created with the supplied numeric part of the id',function(assert){
+		var ab=getAnsButton(5)
+		assert.equal(ab.id,ANS_STRING_ID+5, 'check that the ans id is correct')	
+	});	
+	QUnit.test('Check that a new question area is created with the supplied numeric part of the id',function(assert){
+		var qa=getQstArea(5)
+		assert.equal(qa.id,QST_STRING_ID+5, 'check that the question id is correct')	
+	});	
+	QUnit.test('Check that a new answer div is created with the supplied numeric part of the id',function(assert){
+		var qa=getAnsDiv(5)
+		assert.equal(qa.id,ANS_AREA_STRING_ID+5, 'check that the question id is correct')	
+	});	
+	QUnit.test('Check that a new question is created and that the id makes it the last one',function(assert){
+		var lastItem=$('#rowId').children(':last').get(0)
+		for(var numId=0;numId<5;numId++){
+			assert.equal(lastItem.id,'surveyItem_'+numId, 'verify that the last questions id is incremented by one each time a question is added, check five first questions')
+			addQuestion()
+			lastItem=$('#rowId').children(':last').get(0)
+		}
+	});	
+	QUnit.test('Check that a new question is created and that the id makes it the last one',function(assert){
+		var lastItem=$('#rowId').children(':last').get(0)
+		for(var numId=0;numId<5;numId++){
+			assert.equal(lastItem.id,'surveyItem_'+numId, 'verify that the last questions id is incremented by one each time a question is added, check five first questions')
+			addQuestion()
+			lastItem=$('#rowId').children(':last').get(0)
+		}
+	});	
+	QUnit.test( "Test the function publish", function( assert ) {
+		var didSubmit = false; 
+		$('#flaskForm').submit(function(event) {
+			didSubmit = true;
+			event.preventDefault();
+		});
+		publish();
+		assert.ok(didSubmit, 'Verify that a submit was made');
+		var survey=new Loop()
+		var response=survey.toJson()
+		assert.equal($('#jsonString').val(),survey.toJson(),'Verify that the string containing the survey has been made')
+		assert.equal($('#action').val(),ACTION_PUBLISH,'Verify that the action word telling the view method what to do with the POST has been set correctly')
+    });
+	QUnit.test( "Test the function Loop", function( assert ) {
+		$('#messageBox').val('M')
+		$('#question_0').val('Q')
+		addAnswer('addAnswer_0')
+		$('.answerbox').val('A')
+		var survey=new Loop()
+		console.log(survey)
+		assert.equal(survey.message,'M', 'Check that message has been found')
+		assert.equal(survey.loops[0].question,'Q','Check that question has been found')
+		assert.equal(survey.loops[0].answers[0],'A', 'Check that answer has been found')
+
+		
+    });
+	
   </script>
 </body>
 </html>

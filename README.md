@@ -19,6 +19,13 @@ Blackboard integration. It would be good to add all the people in a class that a
 
 User Interface needs some polishing
 
+# Explanatory remarks
+
+In this project, loop is used as a synonym for survey. This was originally meant to be the name used in the actual GUI, but it felt gimmicky and user testing showed it to be confusing. It remains in the codebase though.
+
+The payLoad field is used in most forms to send information to the client. In most of the javascript, the client alters the value of this field prior to submitting it to the server. it also changes the action field value which tells the view function what the client wants. The form attributes are also changed in some client code to call different view functions or GET instead of POST.
+
+Passwords are stored in the flask session and passed to the server over HTTPs on each request. This can be easily changed into token based authentication if desired.
 
 # Deployment
 

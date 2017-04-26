@@ -48,10 +48,6 @@ def setOneSignalId(userId, oneSignalUid):
 		user.oneSignalUid.append(oneSignalUid)
 		return user.put()
 	return False
-	# if(user.oneSignalUid==oneSignalUid):
-		# return False
-	# user.oneSignalUid=oneSignalUid
-	# return user.put()
 def getOneSignalId(userId):
 	"""Returns The ids for sending notifications to oneSignal or an empty list if none is registered"""
 	user=Account.get_by_id(long(userId))

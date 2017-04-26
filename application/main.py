@@ -30,8 +30,12 @@ import verification
 
 @app.before_request
 def log_request_info():
-	logging.info('Headers: %s', request.headers)
-	logging.info('Body: %s', request.get_data())
-	logging.info('------ {0}'.format(request.form))
+	"""
+	This code will be executed before any request. Remove comments for debugging
+	"""
+	# logging.info('Headers: %s', request.headers)
+	# logging.info('Body: %s', request.get_data())
+	# logging.info('------ {0}'.format(request.form))
+	return
 
 

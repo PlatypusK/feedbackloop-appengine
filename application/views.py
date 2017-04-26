@@ -89,11 +89,6 @@ def channel_search_results():
 			return actionSubscribe()
 	else:
 		abort(400)
-	# logging.debug(request.args)
-	
-	# logging.debug(searchResult)
-	# form=ChannelSearchResults()
-	# return render_template('channel_search_results.html',form=form, channel_list=searchResult)
 	
 @app.route('/subscribed_channels', methods=['GET','POST'])
 @login_required
@@ -179,20 +174,22 @@ def user_main():
 	"""
 	return actionShowWelcomeScreen()
 	
-"""This is the view method for showing plots and statistics from loops"""
+
 @app.route('/show_loop_results', methods=['GET','POST'])
 @login_required
 def show_loop_results():
+	"""This is the view method for showing plots and statistics from loops"""
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_VIEW_LOOP_RESULTS:
 			return actionShowSurveyResults()
 	abort(400)
 	
 	
-"""This is the view method for users to reply to posted surveys"""
+
 @app.route('/show_survey', methods=['GET','POST'])
 @login_required
 def show_survey():
+	"""This is the view method for users to reply to posted surveys"""
 	if request.form.has_key('action'):
 		if request.form['action']==ACTION_SUBMIT_REPLY:
 			return actionSubmitSurvey();
@@ -200,10 +197,11 @@ def show_survey():
 			return actionShowSurvey()
 	abort(400)
 
-"""This is the view method for users to log out"""
+
 @app.route('/log_out', methods=['GET'])
 @login_required
 def log_out():
+	"""This is the view method for users to log out"""
 	return actionLogOut();
 
 
